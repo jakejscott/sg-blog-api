@@ -61,7 +61,14 @@ Step 1: Refresh your AWS credentials
 aws sso login --profile sg-dev
 ```
 
-Step 2: Deploy the app stack
+Step 2: Compile the lambda using AOT
+
+```
+docker-compose build lambda
+docker cp {containerId}:/source/SgBlogApi.CreatePost/bootstrap .\src\SgBlogApi.CreatePost\bin\Release\net7.0\linux-x64\native\bootstrap
+```
+
+Step 3: Deploy
 
 ```
 cdk deploy sg-blog-api-1001-app --profile sg-dev
