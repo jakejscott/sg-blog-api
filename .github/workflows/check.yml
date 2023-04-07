@@ -1,5 +1,6 @@
 permissions:
   contents: read
+  id-token: write
 on:
   push:
     branches: [main]
@@ -8,15 +9,24 @@ name: check
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: check
     name: build
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 7.0.100
-      - run: dotnet build
       - uses: actions/setup-node@v3
         with:
           node-version: 18
+      - run: dotnet build
+      # - run: npm run unit
       - run: npm ci
       - run: npm run build
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::${{ env.CDK_DEFAULT_ACCOUNT }}:role/github-actions
+          role-duration-seconds: 900
+          aws-region: ${{ env.CDK_DEFAULT_REGION }}
+      # - run: cdk deploy sg-blog-api-1001-app
