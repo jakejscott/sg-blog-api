@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: 18
       - run: npm ci
-      - name: stage
+      - name: detect stage
         id: vars
         run: |
           echo "::set-output name=stage::$(echo ${{github.head_ref}} | sed -r 's/[^a-z0-9-]/-/gi' | tr '[:upper:]' '[:lower:]')"
