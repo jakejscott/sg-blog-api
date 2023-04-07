@@ -15,7 +15,7 @@ export class AppStack extends cdk.Stack {
     super(scope, id, props);
 
     const createPost = new lambda.Function(this, "CreatePost", {
-      code: lambda.Code.fromAsset("./src/SgBlogApi.CreatePost/bin/Release/net7.0/linux-x64/native"),
+      code: lambda.Code.fromAsset("./.build/SgBlogApi.CreatePost"),
       handler: "bootstrap",
       functionName: `${this.stackName}-CreatePost`,
       runtime: lambda.Runtime.PROVIDED_AL2,
