@@ -9,7 +9,7 @@ name: check
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: check
+    environment: dev
     env:
       SERVICE: ${{ vars.SERVICE }}
       STAGE: dev
