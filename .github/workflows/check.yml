@@ -19,13 +19,18 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
+      - run: npm ci
+      - name: stage
+        id: vars
+        run: |
+          echo "::set-output name=stage::$(echo ${{github.head_ref}} | sed -r 's/[^a-z0-9-]/-/gi' | tr '[:upper:]' '[:lower:]')"
+          export STAGE=${{ steps.vars.outputs.stage }}
+          echo $STAGE
+      - run: dotnet build
+      - run: npm run build
       - uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: arn:aws:iam::${{ vars.CDK_DEFAULT_ACCOUNT }}:role/github-actions
           role-duration-seconds: 900
           aws-region: ${{ vars.CDK_DEFAULT_REGION }}
-      # - run: cdk deploy sg-blog-api-1001-app
-      - run: dotnet build
-      # - run: npm run unit
-      - run: npm ci
-      - run: npm run build
+      - run: cdk deploy sg-blog-api-${{ steps.vars.outputs.stage }}-app
