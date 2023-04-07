@@ -4,12 +4,11 @@ permissions:
 on:
   pull_request:
     branches:
-      - dev
+      - feat-*
 name: check
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/dev'
     environment: check
     env:
       SERVICE: ${{ vars.SERVICE }}
