@@ -24,6 +24,7 @@ jobs:
         id: vars
         run: |
           echo "STAGE=$(echo ${{github.head_ref}} | sed -r 's/[^a-z0-9-]/-/gi' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+          echo "SERVICE=${{ vars.SERVICE }}" >> $GITHUB_OUTPUT
       - run: dotnet build
       - run: npm run build
       - uses: aws-actions/configure-aws-credentials@v1
