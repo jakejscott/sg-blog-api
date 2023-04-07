@@ -36,4 +36,4 @@ jobs:
           role-duration-seconds: 900
           aws-region: ${{ env.CDK_DEFAULT_REGION }}
       - name: cdk deploy
-        run: npx cdk deploy ${{ env.SERVICE }}-${{ env.STAGE }}-app
+        run: npx cdk deploy ${{ env.SERVICE }}-${{ env.STAGE }}-app --require-approval never
