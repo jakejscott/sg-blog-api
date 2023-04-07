@@ -11,7 +11,7 @@ jobs:
     name: build
     steps:
       - uses: actions/checkout@v3
-      - uses: uses: actions/setup-dotnet@v3
+      - uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 7.0.100
       - run: dotnet build
