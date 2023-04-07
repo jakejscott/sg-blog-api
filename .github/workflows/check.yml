@@ -4,7 +4,7 @@ permissions:
 on:
   pull_request:
     branches:
-      - feat-*
+      - feat/**
 name: check
 jobs:
   build:
