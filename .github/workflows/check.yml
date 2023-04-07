@@ -2,9 +2,9 @@ permissions:
   contents: read
   id-token: write
 on:
-  push:
-    branches: [dev]
   pull_request:
+    branches:
+      - dev
 name: check
 jobs:
   build:
@@ -28,7 +28,6 @@ jobs:
         id: vars
         run: |
           echo "STAGE=$(echo ${{github.head_ref}} | sed -r 's/[^a-z0-9-]/-/gi' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-      - run: dotnet build
       - run: npm run build
       - uses: aws-actions/configure-aws-credentials@v2
         with:
