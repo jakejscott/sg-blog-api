@@ -2,10 +2,11 @@ permissions:
   contents: read
   id-token: write
 on:
-  push:
-    branches: [dev]
   pull_request:
-name: check
+    types: [closed]
+    branches:
+      - dev
+name: cleanup
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -28,12 +29,10 @@ jobs:
         id: vars
         run: |
           echo "STAGE=$(echo ${{github.head_ref}} | sed -r 's/[^a-z0-9-]/-/gi' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-      - run: dotnet build
-      - run: npm run build
       - uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: arn:aws:iam::${{ env.CDK_DEFAULT_ACCOUNT }}:role/github-actions
           role-duration-seconds: 900
           aws-region: ${{ env.CDK_DEFAULT_REGION }}
-      - name: Run cdk deploy
-        run: npx cdk deploy ${{ env.SERVICE }}-${{ env.STAGE }}-app --require-approval never
+      - name: Run cdk destroy
+        run: npx cdk destroy ${{ env.SERVICE }}-${{ env.STAGE }}-app --force
