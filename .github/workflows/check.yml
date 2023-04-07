@@ -10,6 +10,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     environment: check
+    env:
+      SERVICE: ${{ vars.SERVICE }}
+      CDK_DEFAULT_REGION: ${{ vars.CDK_DEFAULT_REGION }}
+      CDK_DEFAULT_ACCOUNT: ${{ vars.CDK_DEFAULT_ACCOUNT }}
     name: build
     steps:
       - uses: actions/checkout@v3
@@ -24,12 +28,11 @@ jobs:
         id: vars
         run: |
           echo "STAGE=$(echo ${{github.head_ref}} | sed -r 's/[^a-z0-9-]/-/gi' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-          echo "SERVICE=${{ vars.SERVICE }}" >> $GITHUB_OUTPUT
       - run: dotnet build
       - run: npm run build
       - uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::${{ vars.CDK_DEFAULT_ACCOUNT }}:role/github-actions
+          role-to-assume: arn:aws:iam::${{ env.CDK_DEFAULT_ACCOUNT }}:role/github-actions
           role-duration-seconds: 900
-          aws-region: ${{ vars.CDK_DEFAULT_REGION }}
-      - run: npx cdk deploy sg-blog-api-${{ env.STAGE }}-app
+          aws-region: ${{ env.CDK_DEFAULT_REGION }}
+      - run: npx cdk deploy {{ env.SERVICE }}-${{ env.STAGE }}-app
