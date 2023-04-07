@@ -4,15 +4,15 @@ permissions:
 on:
   push:
     branches:
-      - dev
-name: dev
+      - main
+name: prod
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: dev
+    environment: prod
     env:
       SERVICE: ${{ vars.SERVICE }}
-      STAGE: dev
+      STAGE: prod
       CDK_DEFAULT_REGION: ${{ vars.CDK_DEFAULT_REGION }}
       CDK_DEFAULT_ACCOUNT: ${{ vars.CDK_DEFAULT_ACCOUNT }}
     name: build
