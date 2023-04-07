@@ -35,4 +35,5 @@ jobs:
           role-to-assume: arn:aws:iam::${{ env.CDK_DEFAULT_ACCOUNT }}:role/github-actions
           role-duration-seconds: 900
           aws-region: ${{ env.CDK_DEFAULT_REGION }}
-      - run: npx cdk deploy {{ env.SERVICE }}-${{ env.STAGE }}-app
+      - name: cdk deploy
+        run: npx cdk deploy ${{ env.SERVICE }}-${{ env.STAGE }}-app
