@@ -1,0 +1,39 @@
+permissions:
+  contents: read
+  id-token: write
+on:
+  push:
+    branches: [dev]
+  pull_request:
+name: check
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: check
+    env:
+      SERVICE: ${{ vars.SERVICE }}
+      CDK_DEFAULT_REGION: ${{ vars.CDK_DEFAULT_REGION }}
+      CDK_DEFAULT_ACCOUNT: ${{ vars.CDK_DEFAULT_ACCOUNT }}
+    name: build
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 7.0.100
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - run: npm ci
+      - name: Run detect stage
+        id: vars
+        run: |
+          echo "STAGE=$(echo ${{github.head_ref}} | sed -r 's/[^a-z0-9-]/-/gi' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+      - run: dotnet build
+      - run: npm run build
+      - uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::${{ env.CDK_DEFAULT_ACCOUNT }}:role/github-actions
+          role-duration-seconds: 900
+          aws-region: ${{ env.CDK_DEFAULT_REGION }}
+      - name: Run cdk deploy
+        run: npx cdk deploy ${{ env.SERVICE }}-${{ env.STAGE }}-app --require-approval never

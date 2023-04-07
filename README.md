@@ -58,14 +58,13 @@ cdk synth sg-blog-api-1001-app --profile sg-dev
 Step 1: Refresh your AWS credentials
 
 ```
-aws sso login --profile sg-dev
+npm run sso
 ```
 
 Step 2: Compile the lambda using AOT
 
 ```
-docker-compose build lambda
-docker cp {containerId}:/source/SgBlogApi.CreatePost/bootstrap .\src\SgBlogApi.CreatePost\bin\Release\net7.0\linux-x64\native\bootstrap
+npm run build
 ```
 
 Step 3: Deploy
@@ -77,6 +76,6 @@ cdk deploy sg-blog-api-1001-app --profile sg-dev
 ## Destroy
 
 ```
-aws sso login --profile sg-dev
+npm run sso
 cdk destroy sg-blog-api-1001-app --profile sg-dev
 ```

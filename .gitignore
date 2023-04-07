@@ -13,3 +13,4 @@ cdk.out
 src/**/bin
 src/**/obj
 .env
+.build
