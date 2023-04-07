@@ -23,7 +23,7 @@ jobs:
       - name: detect stage
         id: vars
         run: |
-          echo "::set-output name=stage::$(echo ${{github.head_ref}} | sed -r 's/[^a-z0-9-]/-/gi' | tr '[:upper:]' '[:lower:]')"
+          echo "STAGE=$(echo ${{github.head_ref}} | sed -r 's/[^a-z0-9-]/-/gi' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
       - run: dotnet build
       - run: npm run build
       - uses: aws-actions/configure-aws-credentials@v1
@@ -31,4 +31,4 @@ jobs:
           role-to-assume: arn:aws:iam::${{ vars.CDK_DEFAULT_ACCOUNT }}:role/github-actions
           role-duration-seconds: 900
           aws-region: ${{ vars.CDK_DEFAULT_REGION }}
-      - run: npx cdk deploy sg-blog-api-${{ steps.vars.outputs.stage }}-app
+      - run: npx cdk deploy sg-blog-api-${{ env.STAGE }}-app
