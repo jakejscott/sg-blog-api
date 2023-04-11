@@ -12,4 +12,8 @@ COPY ./sg-blog-api.sln sg-blog-api.sln
 ENV DOTNET_NOLOGO=true
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=true
 
-RUN dotnet publish -r linux-x64 -c Release --self-contained
+RUN dotnet publish -r linux-x64 -c Release --self-contained ./src/SgBlogApi.CreatePost
+RUN dotnet publish -r linux-x64 -c Release --self-contained ./src/SgBlogApi.GetPost
+RUN dotnet publish -r linux-x64 -c Release --self-contained ./src/SgBlogApi.UpdatePost
+RUN dotnet publish -r linux-x64 -c Release --self-contained ./src/SgBlogApi.DeletePost
+RUN dotnet publish -r linux-x64 -c Release --self-contained ./src/SgBlogApi.ListPost

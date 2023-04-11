@@ -7,7 +7,6 @@
         <Nullable>enable</Nullable>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
         <AWSProjectType>Lambda</AWSProjectType>
-        <AssemblyName>bootstrap</AssemblyName>
         <PublishAot>true</PublishAot>
         <EventSourceSupport>false</EventSourceSupport>
         <UseSystemResourceKeys>true</UseSystemResourceKeys>
@@ -29,7 +28,7 @@
         <TrimmerRootAssembly Include="AWSSDK.DynamoDBv2"/>
         <TrimmerRootAssembly Include="Amazon.Lambda.APIGatewayEvents"/>
         <TrimmerRootAssembly Include="FluentValidation"/>
-        <TrimmerRootAssembly Include="bootstrap"/>
+        <TrimmerRootAssembly Include="SgBlogApi.UpdatePost"/>
         <TrimmerRootAssembly Include="SgBlogApi.Core"/>
     </ItemGroup>
 

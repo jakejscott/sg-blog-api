@@ -12,6 +12,12 @@ public class ProblemDetailsResponse
     public List<string> Errors { get; set; } = new();
 }
 
+public class PaginationToken
+{
+    public string? Pk { get; set; }
+    public string? Sk { get; set; }
+}
+
 public class CreatePostRequest
 {
     public string? Title { get; set; }

@@ -12,6 +12,7 @@ namespace SgBlogApi.Core;
 [JsonSerializable(typeof(DeletePostResponse))]
 [JsonSerializable(typeof(ListPostResponse))]
 [JsonSerializable(typeof(PostDto))]
+[JsonSerializable(typeof(PaginationToken))]
 [JsonSerializable(typeof(APIGatewayProxyRequest))]
 [JsonSerializable(typeof(APIGatewayProxyResponse))]
 [JsonSerializable(typeof(ProblemDetailsResponse))]

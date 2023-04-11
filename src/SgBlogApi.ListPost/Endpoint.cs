@@ -23,13 +23,13 @@ public class Endpoint
         var blogId = apiRequest.PathParameters["blogId"];
 
         string? paginationToken = null;
-        if (apiRequest.QueryStringParameters.TryGetValue("paginationToken", out var rawToken))
+        if (apiRequest.QueryStringParameters != null && apiRequest.QueryStringParameters.TryGetValue("paginationToken", out var rawToken))
         {
             paginationToken = rawToken;
         }
 
         int limit = 10;
-        if (apiRequest.QueryStringParameters.TryGetValue("limit", out var rawLimit))
+        if (apiRequest.QueryStringParameters != null && apiRequest.QueryStringParameters.TryGetValue("limit", out var rawLimit))
         {
             if (int.TryParse(rawLimit, out var value))
             {

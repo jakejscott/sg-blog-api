@@ -153,18 +153,23 @@ public class DynamoDbStore
         });
 
         var entities = response.Items.Select(x => PostEntity.FromItem(x)!).ToList();
-        var nextPaginationToken = EncodeToken(response);
+        var nextPaginationToken = EncodeToken(response.LastEvaluatedKey);
         return (entities, nextPaginationToken);
     }
 
-    private string? EncodeToken(QueryResponse response)
+    private string? EncodeToken(Dictionary<string, AttributeValue>? item)
     {
-        if (response.LastEvaluatedKey is null || response.LastEvaluatedKey.Count <= 0)
+        if (item is null || item.Count <= 0)
             return null;
-        var json = JsonSerializer.Serialize(response.LastEvaluatedKey, _serializerContext.DictionaryStringAttributeValue);
+
+        var token = new PaginationToken
+        {
+            Pk = item["Pk"].S,
+            Sk = item["Sk"].S
+        };
+        
+        var json = JsonSerializer.Serialize(token, _serializerContext.PaginationToken);
         return Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
-        
-        
     }
 
     private Dictionary<string, AttributeValue>? DecodeToken(string? paginationToken)
@@ -172,6 +177,11 @@ public class DynamoDbStore
         if (paginationToken == null)
             return null;
         var json = Convert.FromBase64String(paginationToken);
-        return JsonSerializer.Deserialize(Encoding.UTF8.GetString(json), _serializerContext.DictionaryStringAttributeValue)!;
+        var token = JsonSerializer.Deserialize(Encoding.UTF8.GetString(json), _serializerContext.PaginationToken)!;
+        return new Dictionary<string, AttributeValue>
+        {
+            ["Pk"] = token.Pk.ToAttr(),
+            ["Sk"] = token.Sk.ToAttr(),
+        };
     }
 }
