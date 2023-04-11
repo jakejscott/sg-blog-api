@@ -3,9 +3,12 @@ using Amazon.Lambda.APIGatewayEvents;
 
 namespace SgBlogApi.Core;
 
-[JsonSourceGenerationOptions()]
 [JsonSerializable(typeof(CreatePostRequest))]
 [JsonSerializable(typeof(CreatePostResponse))]
+[JsonSerializable(typeof(UpdatePostRequest))]
+[JsonSerializable(typeof(UpdatePostResponse))]
+[JsonSerializable(typeof(GetPostResponse))]
+[JsonSerializable(typeof(DeletePostResponse))]
 [JsonSerializable(typeof(PostDto))]
 [JsonSerializable(typeof(APIGatewayProxyRequest))]
 [JsonSerializable(typeof(APIGatewayProxyResponse))]

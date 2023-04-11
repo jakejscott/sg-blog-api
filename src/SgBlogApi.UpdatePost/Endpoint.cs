@@ -4,42 +4,45 @@ using OneOf;
 using Serilog;
 using SgBlogApi.Core;
 
-namespace SgBlogApi.CreatePost;
+namespace SgBlogApi.ReadPost;
 
 public class Endpoint
 {
-    private readonly Validator _validator;
     private readonly ILogger _logger;
     private readonly DynamoDbStore _store;
     private readonly SerializerContext _serializerContext;
     private readonly PostMapper _mapper;
+    private readonly Validator _validator;
 
     public Endpoint(ILogger logger, DynamoDbStore store)
     {
-        _validator = new Validator();
-        _serializerContext = new SerializerContext(new () { PropertyNameCaseInsensitive = true });
         _logger = logger;
         _store = store;
         _mapper = new PostMapper();
+        _validator = new Validator();
+        _serializerContext = new SerializerContext(new() { PropertyNameCaseInsensitive = true });
     }
 
     public async Task<APIGatewayProxyResponse> ExecuteAsync(APIGatewayProxyRequest apiRequest)
     {
-        CreatePostRequest? request = JsonSerializer.Deserialize(apiRequest.Body, _serializerContext.CreatePostRequest);
+        var postId = apiRequest.PathParameters["postId"];
+        UpdatePostRequest? request = JsonSerializer.Deserialize(apiRequest.Body, _serializerContext.UpdatePostRequest);
 
-        var result = await CreatePostAsync(request);
+        var result = await UpdatePostAsync(postId, request);
 
         return result.Match(
             success => Response.From(success),
             invalidRequest => Response.From(invalidRequest),
             validationError => Response.From(validationError),
+            notFound => Response.From(notFound),
             serverError => Response.From(serverError)
         );
     }
 
-    private async Task<OneOf<CreatePostResponse, InvalidRequest, ValidationError, ServerError>> CreatePostAsync(CreatePostRequest? request)
+    private async Task<OneOf<UpdatePostResponse, InvalidRequest, ValidationError, NotFound, ServerError>> UpdatePostAsync(
+        string? postId, UpdatePostRequest? request)
     {
-        if (request is null) return new InvalidRequest();
+        if (postId is null || request is null) return new InvalidRequest();
         
         var validation = await _validator.ValidateAsync(request);
         if (!validation.IsValid)
@@ -49,17 +52,16 @@ public class Endpoint
 
         try
         {
-            PostEntity entity = await _store.CreatePostAsync(new ()
+            var entity = await _store.UpdatePostAsync(postId, new ()
             {
                 Title = request.Title!,
-                Body = request.Body!,
+                Body = request.Body!
             });
 
-            PostDto dto = _mapper.PostToDto(entity);
-
-            return new CreatePostResponse
+            return entity switch
             {
-                Post = dto
+                null => new NotFound(),
+                _ => new UpdatePostResponse { Post = _mapper.PostToDto(entity) }
             };
         }
         catch (Exception ex)
