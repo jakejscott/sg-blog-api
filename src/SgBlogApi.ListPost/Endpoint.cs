@@ -28,13 +28,16 @@ public class Endpoint
             paginationToken = rawToken;
         }
 
-        int? limit = null;
-        if (apiRequest.QueryStringParameters.TryGetValue("limit", out var rawLimit) && int.TryParse(rawLimit, out var value))
+        int limit = 10;
+        if (apiRequest.QueryStringParameters.TryGetValue("limit", out var rawLimit))
         {
-            limit = value;
+            if (int.TryParse(rawLimit, out var value))
+            {
+                limit = value;
+            }
         }
 
-        var result = await ListPostAsync(blogId, limit ?? 10, paginationToken);
+        var result = await ListPostAsync(blogId, limit, paginationToken);
 
         return result.Match(
             success => Response.From(success),
