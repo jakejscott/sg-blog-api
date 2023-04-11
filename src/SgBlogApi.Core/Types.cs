@@ -17,6 +17,7 @@ public class ProblemDetailsResponse
 [JsonSerializable(typeof(CreatePostRequest))]
 [JsonSerializable(typeof(CreatePostResponse))]
 [JsonSerializable(typeof(PostDto))]
+[JsonSerializable(typeof(PostEntity))]
 [JsonSerializable(typeof(APIGatewayProxyRequest))]
 [JsonSerializable(typeof(APIGatewayProxyResponse))]
 [JsonSerializable(typeof(ProblemDetailsResponse))]

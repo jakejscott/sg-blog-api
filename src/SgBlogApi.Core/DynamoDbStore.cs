@@ -1,4 +1,6 @@
-﻿using Amazon.DynamoDBv2;
+﻿using System.Text.Json;
+using System.Text.Json.Nodes;
+using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 
 namespace SgBlogApi.Core;
@@ -11,11 +13,13 @@ public class CreatePostArgs
 
 public class DynamoDbStore
 {
+    private readonly SerializerContext _serializerContext;
     private readonly IAmazonDynamoDB _ddb;
     private readonly string _tableName;
 
-    public DynamoDbStore(IAmazonDynamoDB ddb)
+    public DynamoDbStore(IAmazonDynamoDB ddb, SerializerContext serializerContext)
     {
+        _serializerContext = serializerContext;
         _tableName = Env.GetString("TABLE_NAME");
         _ddb = new AmazonDynamoDBClient();
     }
@@ -23,8 +27,6 @@ public class DynamoDbStore
     public async Task<PostEntity> CreatePostAsync(CreatePostArgs args)
     {
         var postId = Ulid.NewUlid().ToString();
-        var pk = $"POST#{postId}";
-        var sk = $"POST#{postId}";
         var now = DateTime.UtcNow;
 
         var entity = new PostEntity
@@ -39,18 +41,9 @@ public class DynamoDbStore
             Entity = "Post",
         };
 
-        var item = new Dictionary<string, AttributeValue>
-        {
-            { nameof(PostEntity.PK), new AttributeValue(pk) },
-            { nameof(PostEntity.SK), new AttributeValue(sk) },
-            { nameof(PostEntity.PostId), new AttributeValue(postId) },
-            { nameof(PostEntity.Title), new AttributeValue(args.Title) },
-            { nameof(PostEntity.Body), new AttributeValue(args.Body) },
-            { nameof(PostEntity.CreatedAt), new AttributeValue(now.ToString("o")) },
-            { nameof(PostEntity.UpdatedAt), new AttributeValue(now.ToString("o")) },
-            { nameof(PostEntity.Entity), new AttributeValue("Post") }
-        };
-
+        var jsonDocument = JsonSerializer.SerializeToDocument(entity, _serializerContext.PostEntity);
+        var item = jsonDocument.ToItem();
+        
         await _ddb.PutItemAsync(new PutItemRequest
         {
             TableName = _tableName,
@@ -58,5 +51,37 @@ public class DynamoDbStore
         });
 
         return entity;
+    }
+}
+
+public static class DynamoDbStoreExtensions
+{
+    public static Dictionary<string, AttributeValue> ToItem(this JsonDocument jsonDocument)
+    {
+        var item = new Dictionary<string, AttributeValue>();
+        
+        foreach (var jsonProperty in jsonDocument.RootElement.EnumerateObject())
+        {
+            var prop = JsonObject.Create(jsonProperty.Value)!;
+            
+            AttributeValue attr = prop.ToAttribute();
+            
+            // if (attr.Type == AttributeType.None) continue;
+            
+            item.Add(jsonProperty.Name, prop.ToAttribute());
+        }
+
+        return item;
+    }
+    
+    private static AttributeValue ToAttribute(this JsonObject prop)
+    {
+        var ddbString = prop["S"];
+        if (ddbString != null)
+        {
+            return new AttributeValue(ddbString.GetValue<string>());
+        }
+
+        throw new NotImplementedException();
     }
 }
