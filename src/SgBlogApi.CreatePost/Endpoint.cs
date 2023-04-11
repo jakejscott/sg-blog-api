@@ -67,7 +67,7 @@ public class Endpoint
         catch (Exception ex)
         {
             _logger.Error(ex, "Something went wrong");
-            return new ServerError(ex);
+            return new ServerError();
         }
     }
 }

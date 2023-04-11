@@ -5,7 +5,7 @@ namespace SgBlogApi.Core;
 
 public record InvalidRequest;
 public record ValidationError(List<string> Errors);
-public record ServerError(Exception Exception);
+public record ServerError;
 
 public class ProblemDetailsResponse
 {

@@ -27,6 +27,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <TrimmerRootAssembly Include="EfficientDynamoDb" />        
         <TrimmerRootAssembly Include="Amazon.Lambda.APIGatewayEvents" />
         <TrimmerRootAssembly Include="FluentValidation" />
         <TrimmerRootAssembly Include="bootstrap" />
