@@ -21,7 +21,7 @@ public class DynamoDbStore
     {
         _serializerContext = serializerContext;
         _tableName = Env.GetString("TABLE_NAME");
-        _ddb = new AmazonDynamoDBClient();
+        _ddb = ddb;
     }
 
     public async Task<PostEntity> CreatePostAsync(CreatePostArgs args)
