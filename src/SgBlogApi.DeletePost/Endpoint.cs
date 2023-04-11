@@ -3,7 +3,7 @@ using OneOf;
 using Serilog;
 using SgBlogApi.Core;
 
-namespace SgBlogApi.ReadPost;
+namespace SgBlogApi.DeletePost;
 
 public class Endpoint
 {

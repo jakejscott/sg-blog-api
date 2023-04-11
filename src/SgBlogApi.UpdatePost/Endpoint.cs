@@ -4,7 +4,7 @@ using OneOf;
 using Serilog;
 using SgBlogApi.Core;
 
-namespace SgBlogApi.ReadPost;
+namespace SgBlogApi.UpdatePost;
 
 public class Endpoint
 {

@@ -5,7 +5,7 @@ using Amazon.Lambda.RuntimeSupport;
 using Amazon.Lambda.Serialization.SystemTextJson;
 using SgBlogApi.Core;
 
-namespace SgBlogApi.ReadPost;
+namespace SgBlogApi.UpdatePost;
 
 public static class Program
 {
