@@ -10,6 +10,7 @@ public static class Response
         public const string InvalidRequest = "INVALID_REQUEST";
         public const string ValidationFailed = "VALIDATION_FAILED";
         public const string InternalServerError = "INTERNAL_SERVER_ERROR";
+        public const string NotFound = "NOT_FOUND";
     }
     
     public static APIGatewayProxyResponse From(CreatePostResponse response)
@@ -18,6 +19,15 @@ public static class Response
         {
             StatusCode = 200,
             Body = JsonSerializer.Serialize(response, SerializerContext.Default.CreatePostResponse)
+        };
+    }
+    
+    public static APIGatewayProxyResponse From(GetPostResponse response)
+    {
+        return new APIGatewayProxyResponse
+        {
+            StatusCode = 200,
+            Body = JsonSerializer.Serialize(response, SerializerContext.Default.GetPostResponse)
         };
     }
     
@@ -30,6 +40,20 @@ public static class Response
             {
                 StatusCode = 415,
                 ErrorCode = ErrorCodes.InvalidRequest,
+                Errors = new()
+            }, SerializerContext.Default.ProblemDetailsResponse)
+        };
+    }
+    
+    public static APIGatewayProxyResponse From(NotFound notFound)
+    {
+        return new APIGatewayProxyResponse
+        {
+            StatusCode = 404,
+            Body = JsonSerializer.Serialize(new ProblemDetailsResponse
+            {
+                StatusCode = 404,
+                ErrorCode = ErrorCodes.NotFound,
                 Errors = new()
             }, SerializerContext.Default.ProblemDetailsResponse)
         };

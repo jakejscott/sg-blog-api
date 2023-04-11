@@ -1,6 +1,7 @@
 ﻿namespace SgBlogApi.Core;
 
 public record InvalidRequest;
+public record NotFound;
 public record ValidationError(List<string> Errors);
 public record ServerError;
 
@@ -18,6 +19,11 @@ public class CreatePostRequest
 }
 
 public class CreatePostResponse
+{
+    public PostDto? Post { get; set; }
+}
+
+public class GetPostResponse
 {
     public PostDto? Post { get; set; }
 }

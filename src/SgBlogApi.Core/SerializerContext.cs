@@ -6,6 +6,7 @@ namespace SgBlogApi.Core;
 [JsonSourceGenerationOptions()]
 [JsonSerializable(typeof(CreatePostRequest))]
 [JsonSerializable(typeof(CreatePostResponse))]
+[JsonSerializable(typeof(GetPostResponse))]
 [JsonSerializable(typeof(PostDto))]
 [JsonSerializable(typeof(APIGatewayProxyRequest))]
 [JsonSerializable(typeof(APIGatewayProxyResponse))]

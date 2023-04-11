@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SgBlogApi.Core", "src\SgBlo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SgBlogApi.UnitTests", "src\SgBlogApi.UnitTests\SgBlogApi.UnitTests.csproj", "{CD52FD31-5AFE-417A-8D91-0261E0AD2168}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SgBlogApi.GetPost", "src\SgBlogApi.GetPost\SgBlogApi.GetPost.csproj", "{979A552A-5DD7-4B7B-84B5-776BCCFB42D9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{CD52FD31-5AFE-417A-8D91-0261E0AD2168}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD52FD31-5AFE-417A-8D91-0261E0AD2168}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD52FD31-5AFE-417A-8D91-0261E0AD2168}.Release|Any CPU.Build.0 = Release|Any CPU
+		{979A552A-5DD7-4B7B-84B5-776BCCFB42D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{979A552A-5DD7-4B7B-84B5-776BCCFB42D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{979A552A-5DD7-4B7B-84B5-776BCCFB42D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{979A552A-5DD7-4B7B-84B5-776BCCFB42D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

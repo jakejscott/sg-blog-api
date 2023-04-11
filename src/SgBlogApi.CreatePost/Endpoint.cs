@@ -29,19 +29,17 @@ public class Endpoint
 
         var result = await CreatePostAsync(request);
 
-        var response = result.Match(
+        return result.Match(
             success => Response.From(success),
             invalidRequest => Response.From(invalidRequest),
             validationError => Response.From(validationError),
             serverError => Response.From(serverError)
         );
-
-        return response;
     }
 
     private async Task<OneOf<CreatePostResponse, InvalidRequest, ValidationError, ServerError>> CreatePostAsync(CreatePostRequest? request)
     {
-        if (request == null) return new InvalidRequest();
+        if (request is null) return new InvalidRequest();
         
         var validation = await _validator.ValidateAsync(request);
         if (!validation.IsValid)

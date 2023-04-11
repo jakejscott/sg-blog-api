@@ -8,6 +8,7 @@ if (existsSync(".build")) {
 
 mkdirSync(".build");
 mkdirSync(".build/SgBlogApi.CreatePost");
+mkdirSync(".build/SgBlogApi.GetPost");
 
 const name = "sg-blog-api";
 
@@ -22,3 +23,4 @@ const run = await $`docker run -d --name ${name} ${name}:latest`;
 const containerId = run.stdout.trim();
 
 await $`docker cp ${containerId}:/source/src/SgBlogApi.CreatePost/bin/Release/net7.0/linux-x64/native/bootstrap .build/SgBlogApi.CreatePost/bootstrap`;
+await $`docker cp ${containerId}:/source/src/SgBlogApi.GetPost/bin/Release/net7.0/linux-x64/native/bootstrap .build/SgBlogApi.GetPost/bootstrap`;
