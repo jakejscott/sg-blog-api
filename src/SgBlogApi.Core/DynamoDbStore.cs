@@ -1,7 +1,5 @@
-﻿using Amazon.Runtime;
-using EfficientDynamoDb;
-using EfficientDynamoDb.Configs;
-using EfficientDynamoDb.Credentials.AWSSDK;
+﻿using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.Model;
 
 namespace SgBlogApi.Core;
 
@@ -13,28 +11,20 @@ public class CreatePostArgs
 
 public class DynamoDbStore
 {
-    private readonly DynamoDbContext _ddb;
+    private readonly IAmazonDynamoDB _ddb;
+    private readonly string _tableName;
 
-    public DynamoDbStore(AWSCredentials credentials)
+    public DynamoDbStore(IAmazonDynamoDB ddb)
     {
-        var service = Env.GetString("SERVICE");
-        var stage = Env.GetString("STAGE");
-        var region = Env.GetString("AWS_REGION");
-        var regionEndpoint = RegionEndpoint.Create(region);
-        var provider = new AWSCredentialsProvider(credentials);
-        var tableNamePrefix = $"{service}-{stage}-app-";
-
-        var config = new DynamoDbContextConfig(regionEndpoint, provider)
-        {
-            TableNamePrefix = tableNamePrefix
-        };
-
-        _ddb = new DynamoDbContext(config);
+        _tableName = Env.GetString("TABLE_NAME");
+        _ddb = new AmazonDynamoDBClient();
     }
 
     public async Task<PostEntity> CreatePostAsync(CreatePostArgs args)
     {
         var postId = Ulid.NewUlid().ToString();
+        var pk = $"POST#{postId}";
+        var sk = $"POST#{postId}";
         var now = DateTime.UtcNow;
 
         var entity = new PostEntity
@@ -49,7 +39,23 @@ public class DynamoDbStore
             Entity = "Post",
         };
 
-        await _ddb.PutItemAsync(entity);
+        var item = new Dictionary<string, AttributeValue>
+        {
+            { nameof(PostEntity.PK), new AttributeValue(pk) },
+            { nameof(PostEntity.SK), new AttributeValue(sk) },
+            { nameof(PostEntity.PostId), new AttributeValue(postId) },
+            { nameof(PostEntity.Title), new AttributeValue(args.Title) },
+            { nameof(PostEntity.Body), new AttributeValue(args.Body) },
+            { nameof(PostEntity.CreatedAt), new AttributeValue(now.ToString("o")) },
+            { nameof(PostEntity.UpdatedAt), new AttributeValue(now.ToString("o")) },
+            { nameof(PostEntity.Entity), new AttributeValue("Post") }
+        };
+
+        await _ddb.PutItemAsync(new PutItemRequest
+        {
+            TableName = _tableName,
+            Item = item
+        });
 
         return entity;
     }

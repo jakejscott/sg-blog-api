@@ -20,14 +20,12 @@
         <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.6.0" />
         <PackageReference Include="Amazon.Lambda.RuntimeSupport" Version="1.8.6" />
         <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.3.1" />
-        <PackageReference Include="EfficientDynamoDb" Version="0.9.13" />
-        <PackageReference Include="EfficientDynamoDb.Credentials.AWSSDK" Version="0.9.3" />
         <PackageReference Include="FluentValidation" Version="11.5.2" />
         <PackageReference Include="OneOf" Version="3.0.243" />
     </ItemGroup>
 
     <ItemGroup>
-        <TrimmerRootAssembly Include="EfficientDynamoDb" />        
+       
         <TrimmerRootAssembly Include="Amazon.Lambda.APIGatewayEvents" />
         <TrimmerRootAssembly Include="FluentValidation" />
         <TrimmerRootAssembly Include="bootstrap" />
