@@ -157,12 +157,14 @@ public class DynamoDbStore
         return (entities, nextPaginationToken);
     }
 
-    private static string? EncodeToken(QueryResponse response)
+    private string? EncodeToken(QueryResponse response)
     {
         if (response.LastEvaluatedKey is null || response.LastEvaluatedKey.Count <= 0)
             return null;
-        var json = JsonSerializer.Serialize(response.LastEvaluatedKey);
+        var json = JsonSerializer.Serialize(response.LastEvaluatedKey, _serializerContext.DictionaryStringAttributeValue);
         return Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
+        
+        
     }
 
     private Dictionary<string, AttributeValue>? DecodeToken(string? paginationToken)
@@ -170,6 +172,6 @@ public class DynamoDbStore
         if (paginationToken == null)
             return null;
         var json = Convert.FromBase64String(paginationToken);
-        return JsonSerializer.Deserialize(json, _serializerContext.DictionaryStringAttributeValue)!;
+        return JsonSerializer.Deserialize(Encoding.UTF8.GetString(json), _serializerContext.DictionaryStringAttributeValue)!;
     }
 }
