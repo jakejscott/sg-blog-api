@@ -14,14 +14,12 @@ public class Fixture
     private static readonly AsyncLazy<Fixture> _factory = new(async () =>
     {
         DotEnv.Fluent()
-            .WithExceptions()
             .WithTrimValues()
             .WithEncoding(Encoding.UTF8)
             .WithOverwriteExistingVars()
             .WithProbeForEnv(8)
             .Load();
         
-        // var account = Env.GetString("CDK_DEFAULT_ACCOUNT");
         var region = Env.GetString("CDK_DEFAULT_REGION");
         var service = Env.GetString("SERVICE");
         var stage = Env.GetString("STAGE");
