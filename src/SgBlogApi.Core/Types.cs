@@ -38,3 +38,8 @@ public class UpdatePostResponse
 {
     public PostDto? Post { get; set; }
 }
+
+public class DeletePostResponse
+{
+    public PostDto? Post { get; set; }
+}

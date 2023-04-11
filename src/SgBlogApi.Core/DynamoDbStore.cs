@@ -64,8 +64,8 @@ public class DynamoDbStore
             TableName = _tableName,
             Key = new()
             {
-                ["PK"] = pk.ToAttr(),
-                ["SK"] = sk.ToAttr(),
+                [nameof(PostEntity.Pk)] = pk.ToAttr(),
+                [nameof(PostEntity.Sk)] = sk.ToAttr(),
             }
         });
 
@@ -85,8 +85,8 @@ public class DynamoDbStore
                 TableName = _tableName,
                 Key = new()
                 {
-                    ["PK"] = pk.ToAttr(),
-                    ["SK"] = sk.ToAttr(),
+                    [nameof(PostEntity.Pk)] = pk.ToAttr(),
+                    [nameof(PostEntity.Sk)] = sk.ToAttr(),
                 },
                 UpdateExpression = "set #title = :title, #body = :body, #updatedAt = :updatedAt",
                 ConditionExpression = "attribute_exists(id)",
@@ -102,6 +102,32 @@ public class DynamoDbStore
                     ["#body"] = nameof(PostEntity.Body),
                 },
                 ReturnValues = ReturnValue.ALL_NEW,
+            });
+
+            return PostEntity.FromItem(response.Attributes);
+        }
+        catch (ConditionalCheckFailedException)
+        {
+            return null;
+        }
+    }
+
+    public async Task<PostEntity?> DeletePostAsync(string postId)
+    {
+        var pk = $"POST#{postId}";
+        var sk = $"POST#{postId}";
+
+        try
+        {
+            var response = await _ddb.DeleteItemAsync(new()
+            {
+                TableName = _tableName,
+                Key = new()
+                {
+                    [nameof(PostEntity.Pk)] = pk.ToAttr(),
+                    [nameof(PostEntity.Sk)] = sk.ToAttr(),
+                },
+                ReturnValues = ReturnValue.ALL_OLD
             });
 
             return PostEntity.FromItem(response.Attributes);

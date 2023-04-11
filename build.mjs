@@ -10,6 +10,7 @@ mkdirSync(".build");
 mkdirSync(".build/SgBlogApi.CreatePost");
 mkdirSync(".build/SgBlogApi.GetPost");
 mkdirSync(".build/SgBlogApi.UpdatePost");
+mkdirSync(".build/SgBlogApi.DeletePost");
 
 const name = "sg-blog-api";
 
@@ -26,3 +27,4 @@ const containerId = run.stdout.trim();
 await $`docker cp ${containerId}:/source/src/SgBlogApi.CreatePost/bin/Release/net7.0/linux-x64/native/bootstrap .build/SgBlogApi.CreatePost/bootstrap`;
 await $`docker cp ${containerId}:/source/src/SgBlogApi.GetPost/bin/Release/net7.0/linux-x64/native/bootstrap .build/SgBlogApi.GetPost/bootstrap`;
 await $`docker cp ${containerId}:/source/src/SgBlogApi.UpdatePost/bin/Release/net7.0/linux-x64/native/bootstrap .build/SgBlogApi.UpdatePost/bootstrap`;
+await $`docker cp ${containerId}:/source/src/SgBlogApi.DeletePost/bin/Release/net7.0/linux-x64/native/bootstrap .build/SgBlogApi.DeletePost/bootstrap`;

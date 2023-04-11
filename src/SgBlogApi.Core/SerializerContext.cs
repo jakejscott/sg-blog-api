@@ -8,6 +8,7 @@ namespace SgBlogApi.Core;
 [JsonSerializable(typeof(UpdatePostRequest))]
 [JsonSerializable(typeof(UpdatePostResponse))]
 [JsonSerializable(typeof(GetPostResponse))]
+[JsonSerializable(typeof(DeletePostResponse))]
 [JsonSerializable(typeof(PostDto))]
 [JsonSerializable(typeof(APIGatewayProxyRequest))]
 [JsonSerializable(typeof(APIGatewayProxyResponse))]
