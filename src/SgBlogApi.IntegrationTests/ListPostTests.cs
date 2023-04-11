@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using FluentAssertions;
+using FluentAssertions.Extensions;
 using Serilog;
 using SgBlogApi.Core;
 using Xunit.Abstractions;
@@ -17,40 +18,72 @@ public class ListPostTests
     {
         var fixture = await Fixture.Ensure();
         var when = new When(_logger, fixture);
-        var blogId = "my-blog";
+        var blogId = Ulid.NewUlid().ToString();
+        var otherBlogId = Ulid.NewUlid().ToString();
 
-        // {
-        //     var apiResponse = await when.ListPostAsync(blogId, limit: null, paginationToken: null);
-        //     apiResponse.StatusCode.Should().Be(200);
-        // }
-        //
-        // {
-        //     var apiResponse = await when.ListPostAsync(blogId, limit: 10, paginationToken: null);
-        //     apiResponse.StatusCode.Should().Be(200);
-        // }
-        
-        
+        await fixture.Store.CreatePostAsync(new ()
         {
-            var apiResponse1 = await when.ListPostAsync(blogId, limit: 1, paginationToken: null);
-            apiResponse1.StatusCode.Should().Be(200);
+            BlogId = blogId,
+            Body = "Body 1",
+            Title = "Title 1",
+        });
+        
+        await fixture.Store.CreatePostAsync(new ()
+        {
+            BlogId = blogId,
+            Body = "Body 2",
+            Title = "Title 2",
+        });
+        
+        await fixture.Store.CreatePostAsync(new ()
+        {
+            BlogId = blogId,
+            Body = "Body 3",
+            Title = "Title 3",
+        });
+        
+        await fixture.Store.CreatePostAsync(new ()
+        {
+            BlogId = otherBlogId,
+            Body = "Other 3",
+            Title = "Other 3",
+        });
 
-            var listPostResponse1 = JsonSerializer.Deserialize<ListPostResponse>(apiResponse1.Body)!;
-            listPostResponse1.Items.Count.Should().Be(1);
-            listPostResponse1.PaginationToken.Should().NotBeEmpty();
-            
-            var apiResponse2 = await when.ListPostAsync(blogId, limit: 1, paginationToken: listPostResponse1.PaginationToken);
-            apiResponse2.StatusCode.Should().Be(200);
-            
-            var listPostResponse2 = JsonSerializer.Deserialize<ListPostResponse>(apiResponse2.Body)!;
-            listPostResponse2.Items.Count.Should().Be(1);
-            // listPostResponse2.PaginationToken.Should().BeNullOrEmpty();
-            
-            var apiResponse3 = await when.ListPostAsync(blogId, limit: 1, paginationToken: listPostResponse2.PaginationToken);
-            apiResponse3.StatusCode.Should().Be(200);
-            var listPostResponse3 = JsonSerializer.Deserialize<ListPostResponse>(apiResponse3.Body)!;
-            listPostResponse3.PaginationToken.Should().BeNullOrEmpty();
+        Func<Task> asyncRetry = async () =>
+        {
+            {
+                var apiResponse1 = await when.ListPostAsync(blogId, limit: 25, paginationToken: null);
+                apiResponse1.StatusCode.Should().Be(200);
 
+                var listPostResponse1 = JsonSerializer.Deserialize<ListPostResponse>(apiResponse1.Body)!;
+                listPostResponse1.Items.Count.Should().Be(3);
+                listPostResponse1.PaginationToken.Should().BeNullOrEmpty();
+            }
+            
+            {
+                var apiResponse1 = await when.ListPostAsync(otherBlogId, limit: 25, paginationToken: null);
+                apiResponse1.StatusCode.Should().Be(200);
 
-        }
+                var listPostResponse1 = JsonSerializer.Deserialize<ListPostResponse>(apiResponse1.Body)!;
+                listPostResponse1.Items.Count.Should().Be(1);
+                listPostResponse1.PaginationToken.Should().BeNullOrEmpty();
+            }
+
+            {
+                var apiResponse1 = await when.ListPostAsync(blogId, limit: 2, paginationToken: null);
+                apiResponse1.StatusCode.Should().Be(200);
+                var listPostResponse1 = JsonSerializer.Deserialize<ListPostResponse>(apiResponse1.Body)!;
+                listPostResponse1.Items.Count.Should().Be(2);
+                listPostResponse1.PaginationToken.Should().NotBeNullOrEmpty();
+
+                var apiResponse2 = await when.ListPostAsync(blogId, limit: 2, paginationToken: listPostResponse1.PaginationToken);
+                apiResponse2.StatusCode.Should().Be(200);
+                var listPostResponse2 = JsonSerializer.Deserialize<ListPostResponse>(apiResponse2.Body)!;
+                listPostResponse2.Items.Count.Should().Be(1);
+                listPostResponse2.PaginationToken.Should().BeNullOrEmpty();
+            }
+        };
+        
+        await asyncRetry.Should().NotThrowAfterAsync(waitTime: 5.Seconds(), pollInterval: 1.Seconds());
     }
 }
