@@ -21,9 +21,15 @@ public class Endpoint
     public async Task<APIGatewayProxyResponse> ExecuteAsync(APIGatewayProxyRequest apiRequest)
     {
         var blogId = apiRequest.PathParameters["blogId"];
-        var paginationToken = apiRequest.QueryStringParameters["paginationToken"];
+
+        string? paginationToken = null;
+        if (apiRequest.QueryStringParameters.TryGetValue("paginationToken", out var rawToken))
+        {
+            paginationToken = rawToken;
+        }
+
         int? limit = null;
-        if (apiRequest.QueryStringParameters.TryGetValue("limit", out var raw) && int.TryParse(raw, out var value))
+        if (apiRequest.QueryStringParameters.TryGetValue("limit", out var rawLimit) && int.TryParse(rawLimit, out var value))
         {
             limit = value;
         }
