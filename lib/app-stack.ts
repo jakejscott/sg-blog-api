@@ -97,7 +97,7 @@ export class AppStack extends cdk.Stack {
     const posts = v1.addResource("posts");
     posts.addMethod("POST", new apigateway.LambdaIntegration(createPost));
 
-    const postsId = posts.addResource("{blogId}");
-    postsId.addMethod("GET", new apigateway.LambdaIntegration(getPost));
+    const posts_postId = posts.addResource("{postId}");
+    posts_postId.addMethod("GET", new apigateway.LambdaIntegration(getPost));
   }
 }
