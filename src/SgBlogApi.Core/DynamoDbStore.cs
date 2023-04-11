@@ -89,7 +89,7 @@ public class DynamoDbStore
                     [nameof(PostEntity.Sk)] = sk.ToAttr(),
                 },
                 UpdateExpression = "set #title = :title, #body = :body, #updatedAt = :updatedAt",
-                ConditionExpression = "attribute_exists(id)",
+                ConditionExpression = "attribute_exists(Pk)",
                 ExpressionAttributeValues = new()
                 {
                     [":title"] = args.Title.ToAttr(),
