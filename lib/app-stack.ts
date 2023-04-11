@@ -20,11 +20,11 @@ export class AppStack extends cdk.Stack {
       encryption: dynamodb.TableEncryption.AWS_MANAGED,
       pointInTimeRecovery: true,
       partitionKey: {
-        name: "PK",
+        name: "Pk",
         type: dynamodb.AttributeType.STRING,
       },
       sortKey: {
-        name: "SK",
+        name: "Sk",
         type: dynamodb.AttributeType.STRING,
       },
       removalPolicy: cdk.RemovalPolicy.DESTROY,
