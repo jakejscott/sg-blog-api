@@ -10,12 +10,14 @@ public class Endpoint
     private readonly Validator _validator;
     private readonly DynamoDbStore _store;
     private readonly SerializerContext _serializerContext;
+    private readonly PostMapper _mapper;
 
     public Endpoint(DynamoDbStore store)
     {
         _validator = new Validator();
         _serializerContext = new SerializerContext(new () { PropertyNameCaseInsensitive = true });
         _store = store;
+        _mapper = new PostMapper();
     }
 
     public async Task<APIGatewayProxyResponse> ExecuteAsync(APIGatewayProxyRequest apiRequest)
@@ -47,15 +49,17 @@ public class Endpoint
 
         try
         {
-            var result = await _store.CreatePostAsync(new CreatePostArgs
+            PostEntity entity = await _store.CreatePostAsync(new CreatePostArgs
             {
                 Title = request.Title!,
                 Body = request.Body!,
             });
 
+            PostDto dto = _mapper.PostToDto(entity);
+
             return new CreatePostResponse
             {
-                PostId = result.PostId
+                Post = dto
             };
         }
         catch (Exception ex)

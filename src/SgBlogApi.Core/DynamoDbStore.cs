@@ -1,31 +1,56 @@
-﻿namespace SgBlogApi.Core;
+﻿using Amazon.Runtime;
+using EfficientDynamoDb;
+using EfficientDynamoDb.Configs;
+using EfficientDynamoDb.Credentials.AWSSDK;
+
+namespace SgBlogApi.Core;
 
 public class CreatePostArgs
 {
     public required string Title { get; set; }
     public required string Body { get; set; }
 }
-    
-public class CreatePostResult
-{
-    public required string PostId { get; set; }
-    public required string Title { get; set; }
-    public required string Body { get; set; }
-}
 
 public class DynamoDbStore
 {
-    public async Task<CreatePostResult> CreatePostAsync(CreatePostArgs args)
+    private readonly DynamoDbContext _ddb;
+
+    public DynamoDbStore(AWSCredentials credentials)
     {
-        await Task.CompletedTask;
-        
-        var result = new CreatePostResult
+        var service = Env.GetString("SERVICE");
+        var stage = Env.GetString("STAGE");
+        var region = Env.GetString("AWS_REGION");
+        var regionEndpoint = RegionEndpoint.Create(region);
+        var provider = new AWSCredentialsProvider(credentials);
+        var tableNamePrefix = $"{service}-{stage}-app-";
+
+        var config = new DynamoDbContextConfig(regionEndpoint, provider)
         {
-            PostId = Guid.NewGuid().ToString(),
-            Title = args.Title,
-            Body = args.Body,
+            TableNamePrefix = tableNamePrefix
         };
 
-        return result;
+        _ddb = new DynamoDbContext(config);
+    }
+
+    public async Task<PostEntity> CreatePostAsync(CreatePostArgs args)
+    {
+        var postId = Ulid.NewUlid().ToString();
+        var now = DateTime.UtcNow;
+
+        var entity = new PostEntity
+        {
+            PK = $"POST#{postId}",
+            SK = $"POST#{postId}",
+            PostId = postId,
+            Title = args.Title,
+            Body = args.Body,
+            CreatedAt = now,
+            UpdatedAt = now,
+            Entity = "Post",
+        };
+
+        await _ddb.PutItemAsync(entity);
+
+        return entity;
     }
 }

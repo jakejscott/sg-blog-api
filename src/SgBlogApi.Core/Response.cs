@@ -26,7 +26,7 @@ public static class Response
         return new APIGatewayProxyResponse
         {
             StatusCode = 415,
-            Body = JsonSerializer.Serialize(new ProblemDetailsResponse()
+            Body = JsonSerializer.Serialize(new ProblemDetailsResponse
             {
                 StatusCode = 415,
                 ErrorCode = ErrorCodes.InvalidRequest,
