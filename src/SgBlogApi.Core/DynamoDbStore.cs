@@ -100,6 +100,7 @@ public class DynamoDbStore
                 {
                     ["#title"] = nameof(PostEntity.Title),
                     ["#body"] = nameof(PostEntity.Body),
+                    ["#updatedAt"] = nameof(PostEntity.UpdatedAt),
                 },
                 ReturnValues = ReturnValue.ALL_NEW,
             });
