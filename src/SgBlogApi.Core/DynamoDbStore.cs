@@ -7,8 +7,14 @@ public class DynamoDbStore
 {
     private readonly IAmazonDynamoDB _ddb;
     private readonly string _tableName;
-    
+
     public class CreatePostArgs
+    {
+        public required string Title { get; init; }
+        public required string Body { get; init; }
+    }
+
+    public class UpdatePostArgs
     {
         public required string Title { get; init; }
         public required string Body { get; init; }
@@ -47,13 +53,13 @@ public class DynamoDbStore
 
         return entity;
     }
-    
+
     public async Task<PostEntity?> GetPostAsync(string postId)
     {
         var pk = $"POST#{postId}";
         var sk = $"POST#{postId}";
 
-        var response = await _ddb.GetItemAsync(new ()
+        var response = await _ddb.GetItemAsync(new()
         {
             TableName = _tableName,
             Key = new()
@@ -64,5 +70,45 @@ public class DynamoDbStore
         });
 
         return PostEntity.FromItem(response.Item);
+    }
+
+    public async Task<PostEntity?> UpdatePostAsync(string postId, UpdatePostArgs args)
+    {
+        var pk = $"POST#{postId}";
+        var sk = $"POST#{postId}";
+        var now = DateTime.UtcNow;
+
+        try
+        {
+            var response = await _ddb.UpdateItemAsync(new UpdateItemRequest
+            {
+                TableName = _tableName,
+                Key = new()
+                {
+                    ["PK"] = pk.ToAttr(),
+                    ["SK"] = sk.ToAttr(),
+                },
+                UpdateExpression = "set #title = :title, #body = :body, #updatedAt = :updatedAt",
+                ConditionExpression = "attribute_exists(id)",
+                ExpressionAttributeValues = new()
+                {
+                    [":title"] = args.Title.ToAttr(),
+                    [":body"] = args.Body.ToAttr(),
+                    [":updatedAt"] = now.ToAttr(),
+                },
+                ExpressionAttributeNames = new()
+                {
+                    ["#title"] = nameof(PostEntity.Title),
+                    ["#body"] = nameof(PostEntity.Body),
+                },
+                ReturnValues = ReturnValue.ALL_NEW,
+            });
+
+            return PostEntity.FromItem(response.Attributes);
+        }
+        catch (ConditionalCheckFailedException)
+        {
+            return null;
+        }
     }
 }

@@ -27,3 +27,14 @@ public class GetPostResponse
 {
     public PostDto? Post { get; set; }
 }
+
+public class UpdatePostRequest
+{
+    public string? Title { get; set; }
+    public string? Body { get; set; }
+}
+
+public class UpdatePostResponse
+{
+    public PostDto? Post { get; set; }
+}

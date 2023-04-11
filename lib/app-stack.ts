@@ -78,6 +78,30 @@ export class AppStack extends cdk.Stack {
 
     blogTable.grantReadData(getPost);
 
+    const updatePost = new lambda.Function(this, "UpdatePost", {
+      code: lambda.Code.fromAsset("./.build/SgBlogApi.UpdatePost"),
+      handler: "bootstrap",
+      functionName: `${this.stackName}-UpdatePost`,
+      runtime: lambda.Runtime.PROVIDED_AL2,
+      architecture: lambda.Architecture.X86_64,
+      timeout: cdk.Duration.seconds(30),
+      memorySize: 1024,
+      environment: {
+        SERVICE: props.service,
+        STAGE: props.stage,
+        TABLE_NAME: blogTable.tableName,
+      },
+      tracing: lambda.Tracing.ACTIVE,
+    });
+
+    new logs.LogGroup(this, "UpdatePostLogGroup", {
+      logGroupName: `/aws/lambda/${updatePost.functionName}`,
+      retention: props.stage === "prod" ? logs.RetentionDays.ONE_YEAR : logs.RetentionDays.ONE_WEEK,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    blogTable.grantReadWriteData(updatePost);
+
     const api = new apigateway.RestApi(this, "ApiGateway", {
       restApiName: this.stackName,
       deployOptions: {
@@ -97,7 +121,8 @@ export class AppStack extends cdk.Stack {
     const posts = v1.addResource("posts");
     posts.addMethod("POST", new apigateway.LambdaIntegration(createPost));
 
-    const posts_postId = posts.addResource("{postId}");
-    posts_postId.addMethod("GET", new apigateway.LambdaIntegration(getPost));
+    const postsPostId = posts.addResource("{postId}");
+    postsPostId.addMethod("GET", new apigateway.LambdaIntegration(getPost));
+    postsPostId.addMethod("PUT", new apigateway.LambdaIntegration(updatePost));
   }
 }
