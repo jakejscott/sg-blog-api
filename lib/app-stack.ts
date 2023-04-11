@@ -70,10 +70,19 @@ export class AppStack extends cdk.Stack {
       },
     });
 
+    const listPost = this.createLambda("ListPost", {
+      code: lambda.Code.fromAsset("./.build/SgBlogApi.ListPost"),
+      functionName: `${this.stackName}-ListPost`,
+      environment: {
+        TABLE_NAME: blogTable.tableName,
+      },
+    });
+
     blogTable.grantReadWriteData(createPost);
     blogTable.grantReadData(getPost);
     blogTable.grantReadWriteData(updatePost);
     blogTable.grantReadWriteData(deletePost);
+    blogTable.grantReadData(listPost);
 
     const api = new apigateway.RestApi(this, "ApiGateway", {
       restApiName: this.stackName,
@@ -91,7 +100,10 @@ export class AppStack extends cdk.Stack {
     });
 
     const v1 = api.root.addResource("v1");
-    const posts = v1.addResource("posts");
+    const blogId = v1.addResource("{blogId}");
+
+    const posts = blogId.addResource("posts");
+    posts.addMethod("GET", new apigateway.LambdaIntegration(listPost));
     posts.addMethod("POST", new apigateway.LambdaIntegration(createPost));
 
     const postsPostId = posts.addResource("{postId}");
@@ -107,7 +119,6 @@ export class AppStack extends cdk.Stack {
       architecture: lambda.Architecture.X86_64,
       timeout: cdk.Duration.seconds(30),
       memorySize: 1024,
-      tracing: lambda.Tracing.ACTIVE,
       ...options,
       environment: {
         SERVICE: this.props.service,

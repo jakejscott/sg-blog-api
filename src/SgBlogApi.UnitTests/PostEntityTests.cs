@@ -8,24 +8,14 @@ public class PostEntityTests
     [Fact]
     public void RoundTrip()
     {
-        var postId = Ulid.NewUlid().ToString();
-        var pk = $"POST#{postId}";
-        var sk = $"POST#{postId}";
-        var now = DateTime.UtcNow;
-
-        var entity = new PostEntity
+        var entity = PostEntity.Create(new()
         {
-            Pk = pk,
-            Sk = sk,
-            Entity = "Post",
-            PostId = postId,
-            Title = "Title",
-            Body = "Body",
-            CreatedAt = now,
-            UpdatedAt = now,
-        };
-
+            BlogId = "my-blog",
+            Body = "Body", 
+            Title = "Title"
+        });
         var item = entity.ToItem();
-        PostEntity.FromItem(item).Should().BeEquivalentTo(entity);
+        var test = PostEntity.FromItem(item);
+        test.Should().BeEquivalentTo(entity);
     }
 }

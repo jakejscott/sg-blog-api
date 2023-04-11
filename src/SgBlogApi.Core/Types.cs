@@ -43,3 +43,9 @@ public class DeletePostResponse
 {
     public PostDto? Post { get; set; }
 }
+
+public class ListPostResponse
+{
+    public string? PaginationToken { get; set; }
+    public List<PostDto> Items { get; set; } = new();
+}

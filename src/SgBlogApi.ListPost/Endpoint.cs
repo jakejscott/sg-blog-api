@@ -21,30 +21,36 @@ public class Endpoint
     public async Task<APIGatewayProxyResponse> ExecuteAsync(APIGatewayProxyRequest apiRequest)
     {
         var blogId = apiRequest.PathParameters["blogId"];
-        var postId = apiRequest.PathParameters["postId"];
+        var paginationToken = apiRequest.QueryStringParameters["paginationToken"];
+        int? limit = null;
+        if (apiRequest.QueryStringParameters.TryGetValue("limit", out var raw) && int.TryParse(raw, out var value))
+        {
+            limit = value;
+        }
 
-        var result = await DeletePostAsync(blogId, postId);
+        var result = await ListPostAsync(blogId, limit ?? 10, paginationToken);
 
         return result.Match(
             success => Response.From(success),
-            invalidRequest => Response.From(invalidRequest),
+            invalid => Response.From(invalid),
             notFound => Response.From(notFound),
             serverError => Response.From(serverError)
         );
     }
 
-    private async Task<OneOf<UpdatePostResponse, InvalidRequest, NotFound, ServerError>> DeletePostAsync(string? blogId, string? postId)
+    private async Task<OneOf<ListPostResponse, InvalidRequest, NotFound, ServerError>> ListPostAsync(
+        string? blogId, int limit, string? paginationToken)
     {
-        if (blogId is null || postId is null) return new InvalidRequest();
+        if (blogId is null) return new InvalidRequest();
 
         try
         {
-            var entity = await _store.DeletePostAsync(blogId, postId);
+            var (items, nextPaginationToken) = await _store.ListPostAsync(blogId, limit, paginationToken);
 
-            return entity switch
+            return new ListPostResponse
             {
-                null => new NotFound(),
-                _ => new UpdatePostResponse { Post = _mapper.PostToDto(entity) }
+                Items = items.Select(x => _mapper.PostToDto(x)).ToList(),
+                PaginationToken = nextPaginationToken
             };
         }
         catch (Exception ex)

@@ -49,6 +49,15 @@ public static class Response
         };
     }
     
+    public static APIGatewayProxyResponse From(ListPostResponse response)
+    {
+        return new APIGatewayProxyResponse
+        {
+            StatusCode = 200,
+            Body = JsonSerializer.Serialize(response, SerializerContext.Default.ListPostResponse)
+        };
+    }
+    
     public static APIGatewayProxyResponse From(InvalidRequest invalidRequest)
     {
         return new APIGatewayProxyResponse
