@@ -7,21 +7,15 @@ namespace SgBlogApi.CreatePost;
 
 public static class Program
 {
-    private static Endpoint? _endpoint;
-
     public static async Task Main()
     {
-        SourceGeneratorLambdaJsonSerializer<SerializerContext> serializer = new (x =>
-        {
-            x.PropertyNameCaseInsensitive = true;
-        });
-
         var store = new DynamoDbStore();
+        var endpoint = new Endpoint(store);
         
-        _endpoint = new Endpoint(store);
+        Func<APIGatewayProxyRequest, Task<APIGatewayProxyResponse>> handler = endpoint.ExecuteAsync;
         
-        Func<APIGatewayProxyRequest, Task<APIGatewayProxyResponse>> handler = _endpoint.ExecuteAsync;
-
-        await LambdaBootstrapBuilder.Create(handler, serializer).Build().RunAsync();
+        await LambdaBootstrapBuilder.Create(handler, new SourceGeneratorLambdaJsonSerializer<SerializerContext>())
+            .Build()
+            .RunAsync();
     }
 }

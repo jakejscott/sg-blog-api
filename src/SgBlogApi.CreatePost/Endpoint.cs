@@ -1,42 +1,37 @@
 ﻿using System.Text.Json;
 using Amazon.Lambda.APIGatewayEvents;
-using FluentValidation;
 using OneOf;
 using SgBlogApi.Core;
 
 namespace SgBlogApi.CreatePost;
 
-public class CreatePostValidator : AbstractValidator<CreatePostRequest>
-{
-    public CreatePostValidator()
-    {
-        RuleFor(x => x.Title).NotEmpty();
-        RuleFor(x => x.Body).NotEmpty();
-    }
-}
-
 public class Endpoint
 {
-    private readonly CreatePostValidator _validator;
+    private readonly Validator _validator;
     private readonly DynamoDbStore _store;
+    private readonly SerializerContext _serializerContext;
 
     public Endpoint(DynamoDbStore store)
     {
-        _validator = new CreatePostValidator();
+        _validator = new Validator();
+        _serializerContext = new SerializerContext(new () { PropertyNameCaseInsensitive = true });
         _store = store;
     }
 
     public async Task<APIGatewayProxyResponse> ExecuteAsync(APIGatewayProxyRequest apiRequest)
     {
-        var request = JsonSerializer.Deserialize(apiRequest.Body, SerializerContext.Default.CreatePostRequest);
+        CreatePostRequest? request = JsonSerializer.Deserialize(apiRequest.Body, _serializerContext.CreatePostRequest);
 
         var result = await CreatePostAsync(request);
 
-        return result.Match(
+        APIGatewayProxyResponse? response = result.Match(
             success => Response.From(success),
             invalidRequest => Response.From(invalidRequest),
             validationError => Response.From(validationError),
-            serverError => Response.From(serverError));
+            serverError => Response.From(serverError)
+        );
+
+        return response;
     }
 
     private async Task<OneOf<CreatePostResponse, InvalidRequest, ValidationError, ServerError>> CreatePostAsync(CreatePostRequest? request)
@@ -52,7 +47,7 @@ public class Endpoint
 
         try
         {
-            var result = await _store.CreatePostAsync(new ()
+            var result = await _store.CreatePostAsync(new CreatePostArgs
             {
                 Title = request.Title!,
                 Body = request.Body!,
