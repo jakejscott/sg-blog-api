@@ -11,9 +11,10 @@ public static class Program
     public static async Task Main()
     {
         var logger = SerilogConfiguration.ConfigureLogging();
+        
         var ddb = new AmazonDynamoDBClient();
-        var serializer = new SerializerContext();
-        var store = new DynamoDbStore(ddb, serializer);
+        var store = new DynamoDbStore(ddb);
+        
         var endpoint = new Endpoint(logger, store);
         
         Func<APIGatewayProxyRequest, Task<APIGatewayProxyResponse>> handler = endpoint.ExecuteAsync;

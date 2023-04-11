@@ -29,7 +29,7 @@ public class Endpoint
 
         var result = await CreatePostAsync(request);
 
-        APIGatewayProxyResponse? response = result.Match(
+        var response = result.Match(
             success => Response.From(success),
             invalidRequest => Response.From(invalidRequest),
             validationError => Response.From(validationError),
@@ -51,7 +51,7 @@ public class Endpoint
 
         try
         {
-            PostEntity entity = await _store.CreatePostAsync(new CreatePostArgs
+            PostEntity entity = await _store.CreatePostAsync(new ()
             {
                 Title = request.Title!,
                 Body = request.Body!,

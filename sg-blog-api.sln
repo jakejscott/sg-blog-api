@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SgBlogApi.CreatePost", "src
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SgBlogApi.Core", "src\SgBlogApi.Core\SgBlogApi.Core.csproj", "{41D85994-C413-46D0-9A05-86433D47F65A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SgBlogApi.UnitTests", "src\SgBlogApi.UnitTests\SgBlogApi.UnitTests.csproj", "{CD52FD31-5AFE-417A-8D91-0261E0AD2168}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{41D85994-C413-46D0-9A05-86433D47F65A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{41D85994-C413-46D0-9A05-86433D47F65A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{41D85994-C413-46D0-9A05-86433D47F65A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD52FD31-5AFE-417A-8D91-0261E0AD2168}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD52FD31-5AFE-417A-8D91-0261E0AD2168}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD52FD31-5AFE-417A-8D91-0261E0AD2168}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD52FD31-5AFE-417A-8D91-0261E0AD2168}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

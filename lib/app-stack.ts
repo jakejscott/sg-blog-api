@@ -41,6 +41,7 @@ export class AppStack extends cdk.Stack {
       environment: {
         SERVICE: props.service,
         STAGE: props.stage,
+        TABLE_NAME: blogTable.tableName,
       },
       tracing: lambda.Tracing.ACTIVE,
     });
