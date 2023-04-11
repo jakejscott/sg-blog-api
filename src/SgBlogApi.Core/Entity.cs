@@ -2,16 +2,16 @@
 
 public class EntityBase
 {
-    public required string PK { get; set; }
-    public required string SK { get; set; }
-    public required string Entity { get; set; }
-    public required DateTime CreatedAt { get; set; }
-    public required DateTime UpdatedAt { get; set; }
+    public string? PK { get; set; }
+    public string? SK { get; set; }
+    public string? Entity { get; set; }
+    public DateTime? CreatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
 }
 
 public class PostEntity : EntityBase
 {
-    public required string PostId { get; set; }
-    public required string Title { get; set; }
-    public required string Body { get; set; }
+    public string? PostId { get; set; }
+    public string? Title { get; set; }
+    public string? Body { get; set; }
 }

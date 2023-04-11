@@ -56,6 +56,11 @@ public class DynamoDbStore
 
 public static class DynamoDbStoreExtensions
 {
+    public static JsonDocument FromItem(this Dictionary<string, AttributeValue> item)
+    {
+        throw new NotImplementedException();
+    }
+
     public static Dictionary<string, AttributeValue> ToItem(this JsonDocument jsonDocument)
     {
         var item = new Dictionary<string, AttributeValue>();
@@ -80,6 +85,24 @@ public static class DynamoDbStoreExtensions
         if (ddbString != null)
         {
             return new AttributeValue(ddbString.GetValue<string>());
+        }
+        
+        var ddbNull = prop["NULL"];
+        if (ddbNull != null)
+        {
+            return new AttributeValue { NULL = true };
+        }
+        
+        var ddbBool = prop["BOOL"];
+        if (ddbBool != null)
+        {
+            return new AttributeValue { BOOL = ddbBool.GetValue<bool>() };
+        }
+
+        var ddbNumber = prop["N"];
+        if (ddbNumber != null)
+        {
+            return new AttributeValue { N = ddbNumber.GetValue<string>() };
         }
 
         throw new NotImplementedException();
