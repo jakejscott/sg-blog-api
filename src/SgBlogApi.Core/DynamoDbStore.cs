@@ -69,7 +69,7 @@ public class DynamoDbStore
             }
         });
 
-        return PostEntity.FromItem(response.Item);
+        return response.IsItemSet ? PostEntity.FromItem(response.Item) : null;
     }
 
     public async Task<PostEntity?> UpdatePostAsync(string postId, UpdatePostArgs args)
@@ -104,7 +104,7 @@ public class DynamoDbStore
                 },
                 ReturnValues = ReturnValue.ALL_NEW,
             });
-
+            
             return PostEntity.FromItem(response.Attributes);
         }
         catch (ConditionalCheckFailedException)

@@ -23,9 +23,10 @@ public class PostEntity : EntityBase
         };
     }
 
-    public static PostEntity? FromItem(Dictionary<string,AttributeValue>? item)
+    public static PostEntity? FromItem(Dictionary<string, AttributeValue>? item)
     {
         if (item is null) return null;
+        if (item.Count == 0) return null;
 
         return new()
         {
