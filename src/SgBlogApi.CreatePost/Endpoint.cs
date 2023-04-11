@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using Amazon.Lambda.APIGatewayEvents;
 using OneOf;
+using Serilog;
 using SgBlogApi.Core;
 
 namespace SgBlogApi.CreatePost;
@@ -8,14 +9,16 @@ namespace SgBlogApi.CreatePost;
 public class Endpoint
 {
     private readonly Validator _validator;
+    private readonly ILogger _logger;
     private readonly DynamoDbStore _store;
     private readonly SerializerContext _serializerContext;
     private readonly PostMapper _mapper;
 
-    public Endpoint(DynamoDbStore store)
+    public Endpoint(ILogger logger, DynamoDbStore store)
     {
         _validator = new Validator();
         _serializerContext = new SerializerContext(new () { PropertyNameCaseInsensitive = true });
+        _logger = logger;
         _store = store;
         _mapper = new PostMapper();
     }
@@ -41,7 +44,6 @@ public class Endpoint
         if (request == null) return new InvalidRequest();
         
         var validation = await _validator.ValidateAsync(request);
-        
         if (!validation.IsValid)
         {
             return new ValidationError(validation.Errors.Select(x => x.ErrorMessage).ToList());
@@ -64,6 +66,7 @@ public class Endpoint
         }
         catch (Exception ex)
         {
+            _logger.Error(ex, "Something went wrong");
             return new ServerError(ex);
         }
     }

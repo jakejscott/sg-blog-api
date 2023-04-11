@@ -14,7 +14,7 @@ export class AppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: AppStackProps) {
     super(scope, id, props);
 
-    const documentTable = new dynamodb.Table(this, "BlogTable", {
+    const blogTable = new dynamodb.Table(this, "BlogTable", {
       tableName: `${this.stackName}-blog`,
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       encryption: dynamodb.TableEncryption.AWS_MANAGED,
@@ -51,7 +51,7 @@ export class AppStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
-    documentTable.grantReadWriteData(createPost);
+    blogTable.grantReadWriteData(createPost);
 
     const api = new apigateway.RestApi(this, "ApiGateway", {
       restApiName: this.stackName,

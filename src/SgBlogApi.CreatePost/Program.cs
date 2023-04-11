@@ -10,9 +10,10 @@ public static class Program
 {
     public static async Task Main()
     {
+        var logger = SerilogConfiguration.ConfigureLogging();
         var credentials = new EnvironmentVariablesAWSCredentials();
         var store = new DynamoDbStore(credentials);
-        var endpoint = new Endpoint(store);
+        var endpoint = new Endpoint(logger, store);
         
         Func<APIGatewayProxyRequest, Task<APIGatewayProxyResponse>> handler = endpoint.ExecuteAsync;
         
