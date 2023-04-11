@@ -1,7 +1,7 @@
 import * as cdk from "aws-cdk-lib";
-import * as sns from "aws-cdk-lib/aws-sns";
 import * as apigateway from "aws-cdk-lib/aws-apigateway";
 import * as logs from "aws-cdk-lib/aws-logs";
+import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import { Construct } from "constructs";
 
@@ -14,6 +14,22 @@ export class AppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: AppStackProps) {
     super(scope, id, props);
 
+    const blogTable = new dynamodb.Table(this, "BlogTable", {
+      tableName: `${this.stackName}-blog`,
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+      encryption: dynamodb.TableEncryption.AWS_MANAGED,
+      pointInTimeRecovery: true,
+      partitionKey: {
+        name: "Pk",
+        type: dynamodb.AttributeType.STRING,
+      },
+      sortKey: {
+        name: "Sk",
+        type: dynamodb.AttributeType.STRING,
+      },
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
     const createPost = new lambda.Function(this, "CreatePost", {
       code: lambda.Code.fromAsset("./.build/SgBlogApi.CreatePost"),
       handler: "bootstrap",
@@ -25,6 +41,7 @@ export class AppStack extends cdk.Stack {
       environment: {
         SERVICE: props.service,
         STAGE: props.stage,
+        TABLE_NAME: blogTable.tableName,
       },
       tracing: lambda.Tracing.ACTIVE,
     });
@@ -34,6 +51,8 @@ export class AppStack extends cdk.Stack {
       retention: props.stage === "prod" ? logs.RetentionDays.ONE_YEAR : logs.RetentionDays.ONE_WEEK,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
+
+    blogTable.grantReadWriteData(createPost);
 
     const api = new apigateway.RestApi(this, "ApiGateway", {
       restApiName: this.stackName,

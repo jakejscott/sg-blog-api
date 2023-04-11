@@ -14,3 +14,4 @@ src/**/bin
 src/**/obj
 .env
 .build
+*.user
