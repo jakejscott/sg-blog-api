@@ -24,6 +24,24 @@ public class When
         return await endpoint.ExecuteAsync(apiRequest);
     }
     
+    public async Task<APIGatewayProxyResponse> GetPostAsync(string blogId, string postId)
+    {
+        var apiRequest = CreateGetRequest();
+        apiRequest.PathParameters.Add("blogId", blogId);
+        apiRequest.PathParameters.Add("postId", postId);
+        var endpoint = new GetPost.Endpoint(_logger, _fixture.Store);
+        return await endpoint.ExecuteAsync(apiRequest);
+    }
+    
+    public async Task<APIGatewayProxyResponse> DeletePostAsync(string blogId, string postId)
+    {
+        var apiRequest = CreateDeleteRequest();
+        apiRequest.PathParameters.Add("blogId", blogId);
+        apiRequest.PathParameters.Add("postId", postId);
+        var endpoint = new DeletePost.Endpoint(_logger, _fixture.Store);
+        return await endpoint.ExecuteAsync(apiRequest);
+    }
+    
     public async Task<APIGatewayProxyResponse> ListPostAsync(string blogId, int? limit, string? paginationToken)
     {
         var apiRequest = CreateGetRequest();

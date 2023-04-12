@@ -9,9 +9,9 @@ namespace SgBlogApi.IntegrationTests;
 
 public class Fixture
 {
-    public static async Task<Fixture> Ensure() => await _factory;
+    public static async Task<Fixture> Ensure() => await Factory;
 
-    private static readonly AsyncLazy<Fixture> _factory = new(async () =>
+    private static readonly AsyncLazy<Fixture> Factory = new(async () =>
     {
         DotEnv.Fluent()
             .WithTrimValues()
