@@ -53,7 +53,7 @@ public class Fixture
 
         var store = new DynamoDbStore(ddb);
         var apiGatewayUrl = await apiGateway.GetApiGatewayUrlAsync(service, stage, region);
-        var client = new SgBlogClient(new HttpClient(), new SgBlogClientConfig { ServiceUrl = apiGatewayUrl });
+        var client = new SgBlogClient(new HttpClient(), apiGatewayUrl);
 
         return new Fixture
         {

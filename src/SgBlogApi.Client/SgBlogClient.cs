@@ -43,10 +43,10 @@ public class SgBlogClient : ISgBlogClient
             .WaitAndRetryAsync(delay);
     }
 
-    public SgBlogClient(HttpClient httpClient, SgBlogClientConfig config)
+    public SgBlogClient(HttpClient httpClient, Uri serviceUrl)
     {
         _httpClient = httpClient;
-        _httpClient.BaseAddress = config.ServiceUrl;
+        _httpClient.BaseAddress = serviceUrl;
     }
     
     public async Task<CreatePostResponse> CreatePostAsync(string blogId, CreatePostRequest request)
