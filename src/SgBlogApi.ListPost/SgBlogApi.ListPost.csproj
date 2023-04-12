@@ -28,7 +28,7 @@
         <TrimmerRootAssembly Include="AWSSDK.DynamoDBv2"/>
         <TrimmerRootAssembly Include="Amazon.Lambda.APIGatewayEvents"/>
         <TrimmerRootAssembly Include="FluentValidation"/>
-        <TrimmerRootAssembly Include="SgBlogApi.GetPost"/>
+        <TrimmerRootAssembly Include="SgBlogApi.ListPost"/>
         <TrimmerRootAssembly Include="SgBlogApi.Core"/>
     </ItemGroup>
 

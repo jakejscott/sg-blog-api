@@ -37,3 +37,4 @@ jobs:
           aws-region: ${{ env.CDK_DEFAULT_REGION }}
       - name: Run cdk deploy
         run: npx cdk deploy ${{ env.SERVICE }}-${{ env.STAGE }}-app --require-approval never
+      - run: npm run integration

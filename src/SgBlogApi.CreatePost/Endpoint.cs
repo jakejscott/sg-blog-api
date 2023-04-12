@@ -27,7 +27,9 @@ public class Endpoint
     {
         CreatePostRequest? request = JsonSerializer.Deserialize(apiRequest.Body, _serializerContext.CreatePostRequest);
 
-        var result = await CreatePostAsync(request);
+        var blogId = apiRequest.PathParameters["blogId"];
+
+        var result = await CreatePostAsync(blogId, request);
 
         return result.Match(
             success => Response.From(success),
@@ -37,9 +39,9 @@ public class Endpoint
         );
     }
 
-    private async Task<OneOf<CreatePostResponse, InvalidRequest, ValidationError, ServerError>> CreatePostAsync(CreatePostRequest? request)
+    private async Task<OneOf<CreatePostResponse, InvalidRequest, ValidationError, ServerError>> CreatePostAsync(string? blogId, CreatePostRequest? request)
     {
-        if (request is null) return new InvalidRequest();
+        if (request is null ||  blogId is null) return new InvalidRequest();
         
         var validation = await _validator.ValidateAsync(request);
         if (!validation.IsValid)
@@ -51,6 +53,7 @@ public class Endpoint
         {
             PostEntity entity = await _store.CreatePostAsync(new ()
             {
+                BlogId = blogId,
                 Title = request.Title!,
                 Body = request.Body!,
             });

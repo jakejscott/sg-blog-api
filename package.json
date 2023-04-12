@@ -6,8 +6,8 @@
     "build": "zx ./build.mjs",
     "sso": "aws sso login --profile sg-dev",
     "unit": "dotnet test ./src/SgBlogApi.UnitTests",
-    "integration": "dotnet test ./src/SgBlogApi.IntegrationTests/",
-    "e2e": "dotnet test ./src/SgBlogApi.EndToEndTests/"
+    "integration": "dotnet test ./src/SgBlogApi.IntegrationTests",
+    "e2e": "dotnet test ./src/SgBlogApi.EndToEndTests"
   },
   "devDependencies": {
     "@types/node": "18.14.6",

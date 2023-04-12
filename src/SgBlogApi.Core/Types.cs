@@ -12,6 +12,12 @@ public class ProblemDetailsResponse
     public List<string> Errors { get; set; } = new();
 }
 
+public class PaginationToken
+{
+    public string? Pk { get; set; }
+    public string? Sk { get; set; }
+}
+
 public class CreatePostRequest
 {
     public string? Title { get; set; }
@@ -42,4 +48,10 @@ public class UpdatePostResponse
 public class DeletePostResponse
 {
     public PostDto? Post { get; set; }
+}
+
+public class ListPostResponse
+{
+    public string? PaginationToken { get; set; }
+    public List<PostDto> Items { get; set; } = new();
 }

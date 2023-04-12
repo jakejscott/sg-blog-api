@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using SgBlogApi.Core;
 
-namespace SgBlogApi.ReadPost;
+namespace SgBlogApi.UpdatePost;
 
 public class Validator : AbstractValidator<UpdatePostRequest>
 {

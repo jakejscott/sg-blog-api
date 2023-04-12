@@ -9,4 +9,11 @@ RUN yum update -y && yum install -y dotnet-sdk-7.0 clang krb5-devel openssl-deve
 COPY ./src/ ./src
 COPY ./sg-blog-api.sln sg-blog-api.sln
 
-RUN dotnet publish -r linux-x64 -c Release --self-contained
+ENV DOTNET_NOLOGO=true
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=true
+
+RUN dotnet publish -r linux-x64 -c Release --self-contained ./src/SgBlogApi.CreatePost
+RUN dotnet publish -r linux-x64 -c Release --self-contained ./src/SgBlogApi.GetPost
+RUN dotnet publish -r linux-x64 -c Release --self-contained ./src/SgBlogApi.UpdatePost
+RUN dotnet publish -r linux-x64 -c Release --self-contained ./src/SgBlogApi.DeletePost
+RUN dotnet publish -r linux-x64 -c Release --self-contained ./src/SgBlogApi.ListPost

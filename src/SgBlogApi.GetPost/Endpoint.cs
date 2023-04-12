@@ -3,7 +3,7 @@ using OneOf;
 using Serilog;
 using SgBlogApi.Core;
 
-namespace SgBlogApi.ReadPost;
+namespace SgBlogApi.GetPost;
 
 public class Endpoint
 {
@@ -20,9 +20,10 @@ public class Endpoint
 
     public async Task<APIGatewayProxyResponse> ExecuteAsync(APIGatewayProxyRequest apiRequest)
     {
+        var blogId = apiRequest.PathParameters["blogId"];
         var postId = apiRequest.PathParameters["postId"];
         
-        var result = await GetPostAsync(postId);
+        var result = await GetPostAsync(blogId, postId);
 
         return result.Match(
             success => Response.From(success),
@@ -32,13 +33,13 @@ public class Endpoint
         );
     }
 
-    private async Task<OneOf<GetPostResponse, InvalidRequest, NotFound, ServerError>> GetPostAsync(string? postId)
+    private async Task<OneOf<GetPostResponse, InvalidRequest, NotFound, ServerError>> GetPostAsync(string? blogId, string? postId)
     {
-        if (postId is null) return new InvalidRequest();
+        if (blogId is null || postId is null) return new InvalidRequest();
         
         try
         {
-            PostEntity? entity = await _store.GetPostAsync(postId);
+            PostEntity? entity = await _store.GetPostAsync(blogId, postId);
             
             return entity switch
             {

@@ -4,7 +4,7 @@ using OneOf;
 using Serilog;
 using SgBlogApi.Core;
 
-namespace SgBlogApi.ReadPost;
+namespace SgBlogApi.UpdatePost;
 
 public class Endpoint
 {
@@ -25,10 +25,12 @@ public class Endpoint
 
     public async Task<APIGatewayProxyResponse> ExecuteAsync(APIGatewayProxyRequest apiRequest)
     {
+        var blogId = apiRequest.PathParameters["blogId"];
         var postId = apiRequest.PathParameters["postId"];
+        
         UpdatePostRequest? request = JsonSerializer.Deserialize(apiRequest.Body, _serializerContext.UpdatePostRequest);
 
-        var result = await UpdatePostAsync(postId, request);
+        var result = await UpdatePostAsync(blogId, postId, request);
 
         return result.Match(
             success => Response.From(success),
@@ -40,9 +42,9 @@ public class Endpoint
     }
 
     private async Task<OneOf<UpdatePostResponse, InvalidRequest, ValidationError, NotFound, ServerError>> UpdatePostAsync(
-        string? postId, UpdatePostRequest? request)
+        string? blogId, string? postId, UpdatePostRequest? request)
     {
-        if (postId is null || request is null) return new InvalidRequest();
+        if (blogId is null || postId is null || request is null) return new InvalidRequest();
         
         var validation = await _validator.ValidateAsync(request);
         if (!validation.IsValid)
@@ -52,10 +54,12 @@ public class Endpoint
 
         try
         {
-            var entity = await _store.UpdatePostAsync(postId, new ()
+            var entity = await _store.UpdatePostAsync(new ()
             {
+                BlogId = blogId,
+                PostId = postId,
                 Title = request.Title!,
-                Body = request.Body!
+                Body = request.Body!,
             });
 
             return entity switch
