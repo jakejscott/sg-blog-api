@@ -42,12 +42,11 @@ public class Endpoint
         return result.Match(
             success => Response.From(success),
             invalid => Response.From(invalid),
-            notFound => Response.From(notFound),
             serverError => Response.From(serverError)
         );
     }
 
-    private async Task<OneOf<ListPostResponse, InvalidRequest, NotFound, ServerError>> ListPostAsync(
+    private async Task<OneOf<ListPostResponse, InvalidRequest, ServerError>> ListPostAsync(
         string? blogId, int limit, string? paginationToken)
     {
         if (blogId is null) return new InvalidRequest();
