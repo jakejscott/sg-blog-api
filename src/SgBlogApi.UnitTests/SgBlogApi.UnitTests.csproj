@@ -24,6 +24,9 @@
 
     <ItemGroup>
       <ProjectReference Include="..\SgBlogApi.Core\SgBlogApi.Core.csproj" />
+      <ProjectReference Include="..\SgBlogApi.CreatePost\SgBlogApi.CreatePost.csproj" />
+      <ProjectReference Include="..\SgBlogApi.GetPost\SgBlogApi.GetPost.csproj" />
+      <ProjectReference Include="..\SgBlogApi.UpdatePost\SgBlogApi.UpdatePost.csproj" />
     </ItemGroup>
 
 </Project>
