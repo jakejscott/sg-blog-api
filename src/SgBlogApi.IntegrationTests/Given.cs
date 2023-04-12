@@ -12,4 +12,13 @@ public class Given
             Title = "Title"
         };
     }
+    
+    public UpdatePostRequest UpdatePostRequest()
+    {
+        return new UpdatePostRequest
+        {
+            Body = "Update Body",
+            Title = "Update Title"
+        };
+    }
 }
