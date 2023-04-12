@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SgBlogApi.IntegrationTests"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SgBlogApi.Client", "src\SgBlogApi.Client\SgBlogApi.Client.csproj", "{16DEE4C6-6CFF-4592-B3F0-B7091AE5CA98}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SgBlogApi.EndToEndTests", "src\SgBlogApi.EndToEndTests\SgBlogApi.EndToEndTests.csproj", "{79885AC6-88B1-4132-BA94-57A2640B765C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,5 +62,9 @@ Global
 		{16DEE4C6-6CFF-4592-B3F0-B7091AE5CA98}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{16DEE4C6-6CFF-4592-B3F0-B7091AE5CA98}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{16DEE4C6-6CFF-4592-B3F0-B7091AE5CA98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79885AC6-88B1-4132-BA94-57A2640B765C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79885AC6-88B1-4132-BA94-57A2640B765C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79885AC6-88B1-4132-BA94-57A2640B765C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79885AC6-88B1-4132-BA94-57A2640B765C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

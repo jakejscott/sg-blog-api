@@ -9,6 +9,8 @@ namespace SgBlogApi.Client;
 public interface ISgBlogClient
 {
     Task<CreatePostResponse> CreatePostAsync(string blogId, CreatePostRequest request);
+
+    Task<GetPostResponse?> GetPostAsync(string blogId, string postId);
 }
 
 public class SgBlogClient : ISgBlogClient
@@ -60,6 +62,35 @@ public class SgBlogClient : ISgBlogClient
                     var result = JsonSerializer.Deserialize<CreatePostResponse>(content)!;
 
                     return result;
+                }
+                default:
+                    throw new SgBlogClientException(httpResponse.StatusCode, content);
+            }
+        });
+    }
+
+    public async Task<GetPostResponse?> GetPostAsync(string blogId, string postId)
+    {
+        return await RetryPolicy().ExecuteAsync(async () =>
+        {
+            var url = new Uri($"v1/{blogId}/posts/{postId}", UriKind.Relative);
+
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Get, url);
+            
+            using var httpResponse = await _httpClient.SendAsync(httpRequest);
+            var content = await httpResponse.Content.ReadAsStringAsync();
+
+            switch (httpResponse.StatusCode)
+            {
+                case HttpStatusCode.OK:
+                {
+                    var result = JsonSerializer.Deserialize<GetPostResponse>(content)!;
+
+                    return result;
+                }
+                case HttpStatusCode.NotFound:
+                {
+                    return null;
                 }
                 default:
                     throw new SgBlogClientException(httpResponse.StatusCode, content);

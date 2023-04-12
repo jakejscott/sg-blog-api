@@ -26,42 +26,42 @@ public class CreatePostRequest
 
 public class CreatePostResponse
 {
-    public PostDto? Post { get; set; }
+    public required PostDto Post { get; set; }
 }
 
 public class GetPostResponse
 {
-    public PostDto? Post { get; set; }
+    public required PostDto Post { get; set; }
 }
 
 public class UpdatePostRequest
 {
-    public string? Title { get; set; }
-    public string? Body { get; set; }
+    public required string Title { get; set; }
+    public required string Body { get; set; }
 }
 
 public class UpdatePostResponse
 {
-    public PostDto? Post { get; set; }
+    public required PostDto Post { get; set; }
 }
 
 public class DeletePostResponse
 {
-    public PostDto? Post { get; set; }
+    public required PostDto Post { get; set; }
 }
 
 public class ListPostResponse
 {
     public string? PaginationToken { get; set; }
-    public List<PostDto> Items { get; set; } = new();
+    public required List<PostDto> Items { get; set; } = new();
 }
 
 public class PostDto
 {
-    public string? BlogId { get; set; }
-    public string? PostId { get; set; }
-    public string? Title { get; set; }
-    public string? Body { get; set; }
-    public DateTime? CreatedAt { get; set; }
-    public DateTime? UpdatedAt { get; set; }
+    public required string BlogId { get; set; }
+    public required string PostId { get; set; }
+    public required string Title { get; set; }
+    public required string Body { get; set; }
+    public required DateTime CreatedAt { get; set; }
+    public required DateTime UpdatedAt { get; set; }
 }
