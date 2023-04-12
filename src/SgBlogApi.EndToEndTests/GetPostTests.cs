@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using FluentAssertions.Extensions;
 
 namespace SgBlogApi.EndToEndTests;
 
@@ -9,21 +10,26 @@ public class GetPostTests
     {
         var fixture = await Fixture.Ensure();
         var given = new Given();
-        
+
         var client = fixture.Client;
         var store = fixture.Store;
         var mapper = fixture.Mapper;
-        
+
         var blogId = Ulid.NewUlid().ToString();
         var args = given.CreatePostArgs(blogId);
-        var entity  = await store.CreatePostAsync(args);
+        var entity = await store.CreatePostAsync(args);
 
-        var response = await client.GetPostAsync(blogId, entity.PostId);
+        Func<Task> asyncRetry = async () =>
+        {
+            var response = await client.GetPostAsync(blogId, entity.PostId);
+
+            response.Should().NotBeNull();
+
+            var postDto = mapper.PostToDto(entity!);
+            response!.Post.Should().BeEquivalentTo(postDto);
+        };
         
-        response.Should().NotBeNull();
-        
-        var postDto = mapper.PostToDto(entity!);
-        response!.Post.Should().BeEquivalentTo(postDto);
+        await asyncRetry.Should().NotThrowAfterAsync(waitTime: 5.Seconds(), pollInterval: 1.Seconds());
     }
     
     [Fact]

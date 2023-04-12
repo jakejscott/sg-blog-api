@@ -35,8 +35,6 @@ public class SgBlogClient : ISgBlogClient
                     HttpStatusCode.GatewayTimeout => true,
                     HttpStatusCode.NotFound => true,        // NOTE: Retry not found, for eventual consistency reasons.
                     HttpStatusCode.BadGateway => true,
-                    HttpStatusCode.Unauthorized => true,    // NOTE: Retry due to Authorizer lambda issues.
-                    HttpStatusCode.Forbidden => true,       // NOTE: Retry due to Authorizer lambda issues.
                     _ => false
                 };
             })
