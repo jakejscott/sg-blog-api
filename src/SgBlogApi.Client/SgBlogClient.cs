@@ -11,6 +11,8 @@ public interface ISgBlogClient
     Task<CreatePostResponse> CreatePostAsync(string blogId, CreatePostRequest request);
 
     Task<GetPostResponse?> GetPostAsync(string blogId, string postId);
+
+    Task<ListPostResponse> ListPostsAsync(string blogId, int limit = 25, string? paginationToken = null);
 }
 
 public class SgBlogClient : ISgBlogClient
@@ -91,6 +93,32 @@ public class SgBlogClient : ISgBlogClient
                 case HttpStatusCode.NotFound:
                 {
                     return null;
+                }
+                default:
+                    throw new SgBlogClientException(httpResponse.StatusCode, content);
+            }
+        });
+    }
+
+    public async Task<ListPostResponse> ListPostsAsync(string blogId, int limit = 25, string? paginationToken = null)
+    {
+        return await RetryPolicy().ExecuteAsync(async () =>
+        {
+            var url = $"v1/{blogId}/posts?limit={limit}";
+            if (paginationToken != null) url += $"&paginationToken={paginationToken}";
+
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Get, url);
+            
+            using var httpResponse = await _httpClient.SendAsync(httpRequest);
+            var content = await httpResponse.Content.ReadAsStringAsync();
+
+            switch (httpResponse.StatusCode)
+            {
+                case HttpStatusCode.OK:
+                {
+                    var result = JsonSerializer.Deserialize<ListPostResponse>(content)!;
+
+                    return result;
                 }
                 default:
                     throw new SgBlogClientException(httpResponse.StatusCode, content);
