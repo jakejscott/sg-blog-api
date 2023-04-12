@@ -1,5 +1,6 @@
 ﻿using SgBlogApi.Core;
 using CreatePostRequest = SgBlogApi.Client.CreatePostRequest;
+using UpdatePostRequest = SgBlogApi.Client.UpdatePostRequest;
 
 namespace SgBlogApi.EndToEndTests;
 
@@ -11,6 +12,17 @@ public class Given
         {
             Title = "Title",
             Body = "Body"
+        };
+
+        return request;
+    }
+
+    public UpdatePostRequest UpdatePostRequest()
+    {
+        var request = new UpdatePostRequest
+        {
+            Title = "Title-2",
+            Body = "Body-2"
         };
 
         return request;

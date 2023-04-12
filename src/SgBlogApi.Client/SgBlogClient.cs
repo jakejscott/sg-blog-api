@@ -10,6 +10,8 @@ public interface ISgBlogClient
 {
     Task<CreatePostResponse> CreatePostAsync(string blogId, CreatePostRequest request);
 
+    Task<UpdatePostResponse> UpdatePostAsync(string blogId, string postId, UpdatePostRequest request);
+
     Task<GetPostResponse?> GetPostAsync(string blogId, string postId);
 
     Task<ListPostResponse> ListPostsAsync(string blogId, int limit = 25, string? paginationToken = null);
@@ -62,6 +64,32 @@ public class SgBlogClient : ISgBlogClient
                 case HttpStatusCode.OK:
                 {
                     var result = JsonSerializer.Deserialize<CreatePostResponse>(content)!;
+
+                    return result;
+                }
+                default:
+                    throw new SgBlogClientException(httpResponse.StatusCode, content);
+            }
+        });
+    }
+
+    public async Task<UpdatePostResponse> UpdatePostAsync(string blogId, string postId, UpdatePostRequest request)
+    {
+        return await RetryPolicy().ExecuteAsync(async () =>
+        {
+            var url = new Uri($"v1/{blogId}/posts/{postId}", UriKind.Relative);
+
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Put, url);
+            httpRequest.Content = new StringContent(JsonSerializer.Serialize(request));
+            
+            using var httpResponse = await _httpClient.SendAsync(httpRequest);
+            var content = await httpResponse.Content.ReadAsStringAsync();
+
+            switch (httpResponse.StatusCode)
+            {
+                case HttpStatusCode.OK:
+                {
+                    var result = JsonSerializer.Deserialize<UpdatePostResponse>(content)!;
 
                     return result;
                 }

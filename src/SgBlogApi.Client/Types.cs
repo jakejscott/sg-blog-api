@@ -1,23 +1,5 @@
 ﻿namespace SgBlogApi.Client;
 
-public record InvalidRequest;
-public record NotFound;
-public record ValidationError(List<string> Errors);
-public record ServerError;
-
-public class ProblemDetailsResponse
-{
-    public int? StatusCode { get; set; }
-    public string? ErrorCode { get; set; }
-    public List<string> Errors { get; set; } = new();
-}
-
-public class PaginationToken
-{
-    public string? Pk { get; set; }
-    public string? Sk { get; set; }
-}
-
 public class CreatePostRequest
 {
     public string? Title { get; set; }
@@ -26,12 +8,12 @@ public class CreatePostRequest
 
 public class CreatePostResponse
 {
-    public required PostDto Post { get; set; }
+    public required PostDto Post { get; init; }
 }
 
 public class GetPostResponse
 {
-    public required PostDto Post { get; set; }
+    public required PostDto Post { get; init; }
 }
 
 public class UpdatePostRequest
@@ -42,26 +24,26 @@ public class UpdatePostRequest
 
 public class UpdatePostResponse
 {
-    public required PostDto Post { get; set; }
+    public required PostDto Post { get; init; }
 }
 
 public class DeletePostResponse
 {
-    public required PostDto Post { get; set; }
+    public required PostDto Post { get; init; }
 }
 
 public class ListPostResponse
 {
-    public string? PaginationToken { get; set; }
-    public required List<PostDto> Items { get; set; } = new();
+    public string? PaginationToken { get; init; }
+    public required List<PostDto> Items { get; init; } = new();
 }
 
 public class PostDto
 {
-    public required string BlogId { get; set; }
-    public required string PostId { get; set; }
-    public required string Title { get; set; }
-    public required string Body { get; set; }
-    public required DateTime CreatedAt { get; set; }
-    public required DateTime UpdatedAt { get; set; }
+    public required string BlogId { get; init; }
+    public required string PostId { get; init; }
+    public required string Title { get; init; }
+    public required string Body { get; init; }
+    public required DateTime CreatedAt { get; init; }
+    public required DateTime UpdatedAt { get; init; }
 }
