@@ -5,7 +5,7 @@ namespace SgBlogApi.Core;
 
 public static class Response
 {
-    private static class ErrorCodes
+    public static class ErrorCodes
     {
         public const string InvalidRequest = "INVALID_REQUEST";
         public const string ValidationFailed = "VALIDATION_FAILED";
