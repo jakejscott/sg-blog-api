@@ -5,6 +5,9 @@ on:
   pull_request:
     branches:
       - dev
+concurrency:
+  group: ${{ github.head_ref }}
+  cancel-in-progress: false
 name: check
 jobs:
   build:
@@ -28,6 +31,7 @@ jobs:
         id: vars
         run: |
           echo "STAGE=$(echo ${{github.head_ref}} | sed -r 's/[^a-z0-9-]/-/gi' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+      - run: npm run unit
       - run: npm run build
       - uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -36,3 +40,4 @@ jobs:
           aws-region: ${{ env.CDK_DEFAULT_REGION }}
       - name: Run cdk deploy
         run: npx cdk deploy ${{ env.SERVICE }}-${{ env.STAGE }}-app --require-approval never
+      - run: npm run integration

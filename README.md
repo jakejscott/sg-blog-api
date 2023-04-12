@@ -50,7 +50,7 @@ prints out the stack as YAML so that you can see what it will do at deployment t
 
 ```
 aws sso login --profile sg-dev
-cdk synth sg-blog-api-1001-app --profile sg-dev
+cdk synth sg-blog-api-feat-1008-app --profile sg-dev
 ```
 
 ## Deploy
@@ -70,12 +70,12 @@ npm run build
 Step 3: Deploy
 
 ```
-cdk deploy sg-blog-api-1001-app --profile sg-dev
+cdk deploy sg-blog-api-feat-1008-app --profile sg-dev
 ```
 
 ## Destroy
 
 ```
 npm run sso
-cdk destroy sg-blog-api-1001-app --profile sg-dev
+cdk destroy sg-blog-api-feat-1008-app --profile sg-dev
 ```

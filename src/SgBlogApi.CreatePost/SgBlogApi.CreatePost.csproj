@@ -3,9 +3,10 @@
     <PropertyGroup>
         <OutputType>exe</OutputType>
         <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
         <AWSProjectType>Lambda</AWSProjectType>
-        <AssemblyName>bootstrap</AssemblyName>
         <PublishAot>true</PublishAot>
         <EventSourceSupport>false</EventSourceSupport>
         <UseSystemResourceKeys>true</UseSystemResourceKeys>
@@ -15,19 +16,24 @@
 
     <ItemGroup>
         <PackageReference Include="Amazon.Lambda.Core" Version="2.1.0" />
-        <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.5.0" />
-        <PackageReference Include="Amazon.Lambda.RuntimeSupport" Version="1.8.2" />
+        <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.6.0" />
+        <PackageReference Include="Amazon.Lambda.RuntimeSupport" Version="1.8.6" />
         <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.3.1" />
+        <PackageReference Include="FluentValidation" Version="11.5.2" />
+        <PackageReference Include="OneOf" Version="3.0.243" />
     </ItemGroup>
 
     <ItemGroup>
+        <TrimmerRootAssembly Include="AWSSDK.Core" />
+        <TrimmerRootAssembly Include="AWSSDK.DynamoDBv2" />
         <TrimmerRootAssembly Include="Amazon.Lambda.APIGatewayEvents" />
-        <TrimmerRootAssembly Include="bootstrap" />
-        <TrimmerRootAssembly Include="SgBlogApi.Core" />        
+        <TrimmerRootAssembly Include="FluentValidation" />
+        <TrimmerRootAssembly Include="SgBlogApi.CreatePost" />
+        <TrimmerRootAssembly Include="SgBlogApi.Core" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\SgBlogApi.Core\SgBlogApi.Core.csproj" />
+        <ProjectReference Include="..\SgBlogApi.Core\SgBlogApi.Core.csproj" />
     </ItemGroup>
 
 </Project>
