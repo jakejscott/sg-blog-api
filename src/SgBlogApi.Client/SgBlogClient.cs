@@ -28,17 +28,17 @@ public class SgBlogClient : ISgBlogClient
         var delay = Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: TimeSpan.FromSeconds(1), retryCount: 5);
 
         return Policy.Handle<SgBlogClientException>(exception =>
+        {
+            return (int)exception.StatusCode >= 500 || exception.StatusCode switch
             {
-                return (int)exception.StatusCode >= 500 || exception.StatusCode switch
-                {
-                    HttpStatusCode.RequestTimeout => true,
-                    HttpStatusCode.GatewayTimeout => true,
-                    HttpStatusCode.NotFound => true,        // NOTE: Retry not found, for eventual consistency reasons.
-                    HttpStatusCode.BadGateway => true,
-                    _ => false
-                };
-            })
-            .WaitAndRetryAsync(delay);
+                HttpStatusCode.RequestTimeout => true,
+                HttpStatusCode.GatewayTimeout => true,
+                HttpStatusCode.NotFound => true,        // NOTE: Retry not found, for eventual consistency reasons.
+                HttpStatusCode.BadGateway => true,
+                _ => false
+            };
+        })
+        .WaitAndRetryAsync(delay);
     }
 
     public SgBlogClient(HttpClient httpClient, Uri serviceUrl)

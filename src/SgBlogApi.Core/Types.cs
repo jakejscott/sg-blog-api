@@ -1,8 +1,20 @@
-﻿namespace SgBlogApi.Core;
+﻿using FluentValidation.Results;
+
+namespace SgBlogApi.Core;
 
 public record InvalidRequest;
 public record NotFound;
-public record ValidationError(List<string> Errors);
+
+public record ValidationError
+{
+    public List<string> Errors { get; }
+    
+    public ValidationError(ValidationResult result)
+    {
+        Errors = result.Errors.Select(x => x.ErrorMessage).ToList();
+    }
+}
+
 public record ServerError;
 
 public class ProblemDetailsResponse

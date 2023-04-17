@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using Amazon.Lambda.APIGatewayEvents;
+using FluentValidation.Results;
 using OneOf;
 using Serilog;
 using SgBlogApi.Core;
@@ -17,7 +18,7 @@ public class Endpoint
     public Endpoint(ILogger logger, DynamoDbStore store)
     {
         _validator = new Validator();
-        _serializerContext = new SerializerContext(new () { PropertyNameCaseInsensitive = true });
+        _serializerContext = new SerializerContext(new() { PropertyNameCaseInsensitive = true });
         _logger = logger;
         _store = store;
         _mapper = new PostMapper();
@@ -25,11 +26,7 @@ public class Endpoint
 
     public async Task<APIGatewayProxyResponse> ExecuteAsync(APIGatewayProxyRequest apiRequest)
     {
-        CreatePostRequest? request = JsonSerializer.Deserialize(apiRequest.Body, _serializerContext.CreatePostRequest);
-
-        var blogId = apiRequest.PathParameters["blogId"];
-
-        var result = await CreatePostAsync(blogId, request);
+        var result = await CreatePostAsync(apiRequest);
 
         return result.Match(
             success => Response.From(success),
@@ -39,19 +36,24 @@ public class Endpoint
         );
     }
 
-    private async Task<OneOf<CreatePostResponse, InvalidRequest, ValidationError, ServerError>> CreatePostAsync(string? blogId, CreatePostRequest? request)
+    private async Task<OneOf<CreatePostResponse, InvalidRequest, ValidationError, ServerError>> CreatePostAsync(APIGatewayProxyRequest apiRequest)
     {
-        if (request is null ||  blogId is null) return new InvalidRequest();
-        
-        var validation = await _validator.ValidateAsync(request);
-        if (!validation.IsValid)
-        {
-            return new ValidationError(validation.Errors.Select(x => x.ErrorMessage).ToList());
-        }
-
         try
         {
-            PostEntity entity = await _store.CreatePostAsync(new ()
+            if (apiRequest.Body is null)
+                return new InvalidRequest();
+
+            CreatePostRequest? request = JsonSerializer.Deserialize(apiRequest.Body, _serializerContext.CreatePostRequest);
+            if (request is null)
+                return new InvalidRequest();
+
+            ValidationResult? validation = await _validator.ValidateAsync(request);
+            if (!validation.IsValid)
+                return new ValidationError(validation);
+
+            var blogId = apiRequest.PathParameters["blogId"]!;
+
+            PostEntity entity = await _store.CreatePostAsync(new()
             {
                 BlogId = blogId,
                 Title = request.Title!,
