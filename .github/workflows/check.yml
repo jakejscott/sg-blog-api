@@ -41,3 +41,4 @@ jobs:
       - name: Run cdk deploy
         run: npx cdk deploy ${{ env.SERVICE }}-${{ env.STAGE }}-app --require-approval never
       - run: npm run integration
+      - run: npm run e2e
