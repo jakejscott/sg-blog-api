@@ -32,16 +32,7 @@ await $`docker cp ${containerId}:/source/src/SgBlogApi.DeletePost/bin/Release/ne
 await $`docker cp ${containerId}:/source/src/SgBlogApi.ListPost/bin/Release/net7.0/linux-x64/native/. .build/SgBlogApi.ListPost`;
 
 await $`mv ./.build/SgBlogApi.CreatePost/SgBlogApi.CreatePost ./.build/SgBlogApi.CreatePost/bootstrap`;
-await $`mv ./.build/SgBlogApi.CreatePost/SgBlogApi.CreatePost.dbg ./.build/SgBlogApi.CreatePost/bootstrap.dbg`;
-
 await $`mv ./.build/SgBlogApi.GetPost/SgBlogApi.GetPost ./.build/SgBlogApi.GetPost/bootstrap`;
-await $`mv ./.build/SgBlogApi.GetPost/SgBlogApi.GetPost.dbg ./.build/SgBlogApi.GetPost/bootstrap.dbg`;
-
 await $`mv ./.build/SgBlogApi.UpdatePost/SgBlogApi.UpdatePost ./.build/SgBlogApi.UpdatePost/bootstrap`;
-await $`mv ./.build/SgBlogApi.UpdatePost/SgBlogApi.UpdatePost.dbg ./.build/SgBlogApi.UpdatePost/bootstrap.dbg`;
-
 await $`mv ./.build/SgBlogApi.DeletePost/SgBlogApi.DeletePost ./.build/SgBlogApi.DeletePost/bootstrap`;
-await $`mv ./.build/SgBlogApi.DeletePost/SgBlogApi.DeletePost.dbg ./.build/SgBlogApi.DeletePost/bootstrap.dbg`;
-
 await $`mv ./.build/SgBlogApi.ListPost/SgBlogApi.ListPost ./.build/SgBlogApi.ListPost/bootstrap`;
-await $`mv ./.build/SgBlogApi.ListPost/SgBlogApi.ListPost.dbg ./.build/SgBlogApi.ListPost/bootstrap.dbg`;
