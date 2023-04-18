@@ -25,12 +25,7 @@ public class Endpoint
 
     public async Task<APIGatewayProxyResponse> ExecuteAsync(APIGatewayProxyRequest apiRequest)
     {
-        var blogId = apiRequest.PathParameters["blogId"];
-        var postId = apiRequest.PathParameters["postId"];
-        
-        UpdatePostRequest? request = JsonSerializer.Deserialize(apiRequest.Body, _serializerContext.UpdatePostRequest);
-
-        var result = await UpdatePostAsync(blogId, postId, request);
+        var result = await UpdatePostAsync(apiRequest);
 
         return result.Match(
             success => Response.From(success),
@@ -41,19 +36,25 @@ public class Endpoint
         );
     }
 
-    private async Task<OneOf<UpdatePostResponse, InvalidRequest, ValidationError, NotFound, ServerError>> UpdatePostAsync(
-        string? blogId, string? postId, UpdatePostRequest? request)
+    private async Task<OneOf<UpdatePostResponse, InvalidRequest, ValidationError, NotFound, ServerError>> UpdatePostAsync(APIGatewayProxyRequest apiRequest)
     {
-        if (blogId is null || postId is null || request is null) return new InvalidRequest();
-        
-        var validation = await _validator.ValidateAsync(request);
-        if (!validation.IsValid)
-        {
-            return new ValidationError(validation.Errors.Select(x => x.ErrorMessage).ToList());
-        }
-
         try
         {
+            var blogId = apiRequest.PathParameters["blogId"]!;
+            var postId = apiRequest.PathParameters["postId"]!;
+            
+            if (apiRequest.Body is null) return new InvalidRequest();
+
+            UpdatePostRequest? request = JsonSerializer.Deserialize(apiRequest.Body, _serializerContext.UpdatePostRequest);
+            if (request is null)
+                return new InvalidRequest();
+            
+            var validation = await _validator.ValidateAsync(request);
+            if (!validation.IsValid)
+            {
+                return new ValidationError(validation);
+            }
+
             var entity = await _store.UpdatePostAsync(new ()
             {
                 BlogId = blogId,

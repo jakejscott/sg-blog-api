@@ -1,31 +1,19 @@
 using System.Text.Json;
 using Amazon.DynamoDBv2;
-using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.RuntimeSupport;
 using Amazon.Lambda.Serialization.SystemTextJson;
 using SgBlogApi.Core;
+using SgBlogApi.GetPost;
 
-namespace SgBlogApi.GetPost;
+var logger = SerilogConfiguration.ConfigureLogging();
+var ddb = new AmazonDynamoDBClient();
+var store = new DynamoDbStore(ddb);
 
-public static class Program
-{
-    public static async Task Main()
-    {
-        var logger = SerilogConfiguration.ConfigureLogging();
+var endpoint = new Endpoint(logger, store);
+var handler = endpoint.ExecuteAsync;
 
-        var ddb = new AmazonDynamoDBClient();
-        var store = new DynamoDbStore(ddb);
+var serializer = new SourceGeneratorLambdaJsonSerializer<SerializerContext>(
+    x => x.PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+);
 
-        var endpoint = new Endpoint(logger, store);
-
-        Func<APIGatewayProxyRequest, Task<APIGatewayProxyResponse>> handler = endpoint.ExecuteAsync;
-
-        await LambdaBootstrapBuilder.Create(handler,
-                new SourceGeneratorLambdaJsonSerializer<SerializerContext>(options =>
-                {
-                    options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-                }))
-            .Build()
-            .RunAsync();
-    }
-}
+await LambdaBootstrapBuilder.Create(handler, serializer).Build().RunAsync();

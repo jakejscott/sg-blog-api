@@ -20,10 +20,7 @@ public class Endpoint
 
     public async Task<APIGatewayProxyResponse> ExecuteAsync(APIGatewayProxyRequest apiRequest)
     {
-        var blogId = apiRequest.PathParameters["blogId"];
-        var postId = apiRequest.PathParameters["postId"];
-        
-        var result = await GetPostAsync(blogId, postId);
+        var result = await GetPostAsync(apiRequest);
 
         return result.Match(
             success => Response.From(success),
@@ -33,12 +30,13 @@ public class Endpoint
         );
     }
 
-    private async Task<OneOf<GetPostResponse, InvalidRequest, NotFound, ServerError>> GetPostAsync(string? blogId, string? postId)
+    private async Task<OneOf<GetPostResponse, InvalidRequest, NotFound, ServerError>> GetPostAsync(APIGatewayProxyRequest apiRequest)
     {
-        if (blogId is null || postId is null) return new InvalidRequest();
-        
         try
         {
+            var blogId = apiRequest.PathParameters["blogId"]!;
+            var postId = apiRequest.PathParameters["postId"]!;
+            
             PostEntity? entity = await _store.GetPostAsync(blogId, postId);
             
             return entity switch

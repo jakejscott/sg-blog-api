@@ -37,12 +37,6 @@ Create an instance profile called `sg-dev`
 aws configure sso --profile sg-dev
 ```
 
-## Publish
-
-```
-npm run publish
-```
-
 ## Synth
 
 Synth is useful during development to test out changes you're making to CDK. It doesn't actually deploy anything, it just
