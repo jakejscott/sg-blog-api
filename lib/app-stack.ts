@@ -1,8 +1,11 @@
 import * as cdk from "aws-cdk-lib";
 import * as apigateway from "aws-cdk-lib/aws-apigateway";
+import * as cloudwatch from "aws-cdk-lib/aws-cloudwatch";
+import * as actions from "aws-cdk-lib/aws-cloudwatch-actions";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as logs from "aws-cdk-lib/aws-logs";
+import * as sns from "aws-cdk-lib/aws-sns";
 import { Construct } from "constructs";
 
 export interface AppStackProps extends cdk.StackProps {
@@ -13,7 +16,9 @@ export interface AppStackProps extends cdk.StackProps {
 type RequiredPick<T, K extends keyof T> = Required<Pick<T, K>>;
 
 type RequiredFunctionProps = RequiredPick<lambda.FunctionProps, "code" | "functionName"> &
-  Partial<lambda.FunctionProps>;
+  Partial<lambda.FunctionProps> & {
+    alarmTopic: sns.Topic;
+  };
 
 export class AppStack extends cdk.Stack {
   private props: AppStackProps;
@@ -21,6 +26,10 @@ export class AppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: AppStackProps) {
     super(scope, id, props);
     this.props = props;
+
+    const alarmTopic = new sns.Topic(this, "AlarmTopic", {
+      topicName: `${this.stackName}-alarm`,
+    });
 
     const blogTable = new dynamodb.Table(this, "BlogTable", {
       tableName: `${this.stackName}-blog`,
@@ -44,6 +53,7 @@ export class AppStack extends cdk.Stack {
       environment: {
         TABLE_NAME: blogTable.tableName,
       },
+      alarmTopic,
     });
 
     const getPost = this.createLambda("GetPost", {
@@ -52,6 +62,7 @@ export class AppStack extends cdk.Stack {
       environment: {
         TABLE_NAME: blogTable.tableName,
       },
+      alarmTopic,
     });
 
     const updatePost = this.createLambda("UpdatePost", {
@@ -60,6 +71,7 @@ export class AppStack extends cdk.Stack {
       environment: {
         TABLE_NAME: blogTable.tableName,
       },
+      alarmTopic,
     });
 
     const deletePost = this.createLambda("DeletePost", {
@@ -68,6 +80,7 @@ export class AppStack extends cdk.Stack {
       environment: {
         TABLE_NAME: blogTable.tableName,
       },
+      alarmTopic,
     });
 
     const listPost = this.createLambda("ListPost", {
@@ -76,6 +89,7 @@ export class AppStack extends cdk.Stack {
       environment: {
         TABLE_NAME: blogTable.tableName,
       },
+      alarmTopic,
     });
 
     blogTable.grantReadWriteData(createPost);
@@ -132,6 +146,17 @@ export class AppStack extends cdk.Stack {
       retention: this.props.stage === "prod" ? logs.RetentionDays.ONE_YEAR : logs.RetentionDays.ONE_WEEK,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
+
+    const alarm = new cloudwatch.Alarm(this, `${id}Errors`, {
+      alarmName: `${this.stackName}-${id}Errors`,
+      comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
+      metric: lambdaFunction.metricErrors({ statistic: "Sum", period: cdk.Duration.minutes(1) }),
+      threshold: 1,
+      evaluationPeriods: 1,
+      actionsEnabled: true,
+    });
+
+    alarm.addAlarmAction(new actions.SnsAction(options.alarmTopic));
 
     return lambdaFunction;
   }

@@ -20,10 +20,7 @@ public class Endpoint
 
     public async Task<APIGatewayProxyResponse> ExecuteAsync(APIGatewayProxyRequest apiRequest)
     {
-        var blogId = apiRequest.PathParameters["blogId"];
-        var postId = apiRequest.PathParameters["postId"];
-
-        var result = await DeletePostAsync(blogId, postId);
+        var result = await DeletePostAsync(apiRequest);
 
         return result.Match(
             success => Response.From(success),
@@ -33,12 +30,13 @@ public class Endpoint
         );
     }
 
-    private async Task<OneOf<UpdatePostResponse, InvalidRequest, NotFound, ServerError>> DeletePostAsync(string? blogId, string? postId)
+    private async Task<OneOf<UpdatePostResponse, InvalidRequest, NotFound, ServerError>> DeletePostAsync(APIGatewayProxyRequest apiRequest)
     {
-        if (blogId is null || postId is null) return new InvalidRequest();
-
         try
         {
+            var blogId = apiRequest.PathParameters["blogId"]!;
+            var postId = apiRequest.PathParameters["postId"]!;
+
             var entity = await _store.DeletePostAsync(blogId, postId);
 
             return entity switch
