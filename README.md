@@ -1,5 +1,7 @@
 # sg-blog-api
 
+![Architecture Diagram](diagram.png)
+
 ## Prereqs
 
 - Install VS Code for working in CDK in Typescript
@@ -72,4 +74,19 @@ cdk deploy sg-blog-api-feat-1008-app --profile sg-dev
 ```
 npm run sso
 cdk destroy sg-blog-api-feat-1008-app --profile sg-dev
+```
+
+## Generate Architecture Diagram
+
+Follow instructions to add cdk-dia to your CDK project see docs from the [cdk-dia github](https://github.com/pistazie/cdk-dia)
+
+Synth 
+```
+aws sso login --profile sg-dev
+cdk synth sg-blog-api-feat-1008-app --profile sg-dev
+```
+
+Generate a CDK-DIA diagram PNG
+```
+npx cdk-dia
 ```
